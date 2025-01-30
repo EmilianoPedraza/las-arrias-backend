@@ -1,0 +1,6 @@
+# dependencies
+/node_modules
+#notas
+/configuracion de typescript.txt
+/dependenciasNecesarias.txt
+/dist
