@@ -33,6 +33,7 @@ const VisitingUser = User.discriminator('VisitingUser', new Schema({}))
 const LocalUser = User.discriminator('LocalUser',
      new Schema({
         dni: { type: Number, required: true, unique: true },
+        telefono: {type: Number, required:false},
         contribuciones: { type: Number, default: 0 }})
 )
 
