@@ -2,7 +2,7 @@ export enum EXPRESIONS_TYPES_VALID_USER {
     FIRST_AND_LASTNAME = "^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$",
     VALID_EMAIL = "^[a-zA-Z1-9]+(\\.[a-zA-Z1-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$",
     VALID_USERNAME = "^(?!.*[{}\\[\\]()\":;'?~`´^&-])(?=[a-zA-Z1-9_]+(\\.[a-zA-Z1-9_]+)*$)[a-zA-Z1-9_]+(\\.[a-zA-Z1-9_]+)*$",
-    VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+(?:\\.[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+)*[^.]$"
+    VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+(?:\\.[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+)*[^.]$",
 }
 
 
@@ -114,3 +114,8 @@ Resumen de validaciones
         🚫 No puede llevar tildes dobles o combinaciones raras.
 
 */
+
+
+//?                                         VALID_DNI
+
+//*Expresión en formato JS                  /^\d{7,8}$/

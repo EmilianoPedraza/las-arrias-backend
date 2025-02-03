@@ -21,6 +21,15 @@ const validarCadena = (str: string) => {
 };
 
 
-export { validType, validarCadena };
+const validarNumEntero = (num: number): boolean => {
+    if (Number.isInteger(num)) {
+        //Se cumple si el número es entero
+        return true
+    }
+    //caso contrario retorna false
+    return false
+}
+
+export { validType, validarCadena, validarNumEntero };
 
 

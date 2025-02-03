@@ -38,7 +38,7 @@ export default class User {
     validateUser() {
         //Validaciones de nombre
         if (!validType(this.nombre, 'string')) {
-            throw new Error('El nombre debe no es un tipo de dato valido')
+            throw new Error('El nombre no es un tipo de dato valido')
         }
         if (!User.validNombreYapellido(this.nombre)) {
             throw new Error('El nombre incumple las condiciones de formato')
