@@ -7,15 +7,16 @@ const { Router } = express
 const localUserRoute = Router()
 
 
-
 localUserRoute.use(json())
 localUserRoute.use(express.urlencoded({ extended: true }))
 
-//Para creacion de usuarios
-localUserRoute.post('/createUser', (req, res) => {
+//?PARA CREACIÓN DE USUARIOS
+localUserRoute.post('/createUser', async (req, res) => {
     try {
         const { nombre, apellido, nombreUsuario, email, password, dni, telefono } = req.body
-        const newUser = new localUser(dni, telefono, nombre, apellido, nombreUsuario, email, password).createLocalUser()
+        const newUser = new localUser(dni, telefono, nombre, apellido, nombreUsuario, email, password)
+        await newUser.createLocalUser()
+        console.log(newUser)
         res.status(200).json({ ok: true, user: newUser })
     } catch (err) {
         res.status(400).json({ ok: false, error: { type: ErrorTypes.Unauthorized, message: 'err.message' } })

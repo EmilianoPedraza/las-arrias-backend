@@ -35,11 +35,12 @@ export default class localUser extends User {
         }
     }
     //Metódo para crear un localUser
-    createLocalUser() {
+    async createLocalUser() {
         //?VALIDAR QUE TODOS LOS CAMPOS DE USER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
-        this.validateUser()
+        await this.validateUser()
         //?VALIDAR QUE TODOS LOS CAMPOS DE lLOCALUSER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
         this.validateLocalUser()
+        await this.encriptarPsw()
     }
 }
 

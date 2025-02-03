@@ -1,8 +1,13 @@
+//Para encriptar contraseñas
+import bcrypt from "bcrypt"
 //Función que permite validar el tipo de dato de una variable
 import { validType } from "../../functions/functions"
+//Tipos
+import { FindUser } from "../../types/modelTypes";
 //Para obtener expresiónes regulares de validación de strings
 import { EXPRESIONS_TYPES_VALID_USER } from "../../types/expresions";
-
+//Se importa el modelo de usuario creado para la base de datos
+import { User as UserModel } from "../../models/usuario"; // se utiliza 'as' para renombrar User a UserModel y así evitar conflictos
 
 export default class User {
     constructor(
@@ -14,6 +19,36 @@ export default class User {
         // public creadoEn: Date,
         // public actualizadoEn: Date
     ) { }
+    //?ENCRIPTAR CONTRASEÑA
+    encriptarPsw = async (): Promise<true | never> => {
+        try {
+            const newPsw = await bcrypt.hash(this.password, 10)
+            this.password = newPsw
+            return true
+        } catch (error) {
+            throw new Error('Error procesando contraseña');
+        }
+    }
+    //?COMPARAR CONTRASEÑA DESENCRIPTADA CON CONTRASEÑA ENCRIPTADA
+    compararPsw = async (password: string): Promise<boolean | never> => {
+        try {
+            if (await bcrypt.compare(password, this.password)) {
+                return true
+            }
+            return false
+        } catch (error) {
+            throw new Error('Error procesando contraseña');
+        }
+    }
+
+    //?BUSCAR UN USUARIO POR CAMPO, SI EXISTE RETORNA UN ARRAY CON EL USUARIO, CASO CONTRARIO FALSE
+    static buscarPorProps = async (prop: string, valor: string | number): Promise<FindUser | boolean | unknown> => {//!problema de tipado en retorno
+        const usuario = await UserModel.find({ [prop]: valor })
+        if (usuario.length > 0) {
+            return usuario[0]
+        }
+        return false
+    }
 
     //?VALIDAR QUE UNA CADENA DE STRING TENGA EL FORMATO CORRECTO PARA SER EMAIL
     static validarCorreo = (email: string): boolean => {
@@ -40,7 +75,7 @@ export default class User {
     }
 
     //?VALIDAR QUE TODOS LOS CAMPOS DE USER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
-    validateUser() {
+    async validateUser() {
         //!Validaciones de nombre
         if (!this.nombre) {
             throw new Error('El campo nombre no existe')
@@ -70,6 +105,9 @@ export default class User {
         }
         if (!User.validarNombreUsuario(this.nombreUsuario)) {
             throw new Error('El nombre de usuario incumple las condiciones de formato')
+        }
+        if (await User.buscarPorProps('nombreUsuario', this.nombreUsuario)) {
+            throw new Error('El nombre de usuario ya existe')
         }
         //!Validaciones de email
         if (!this.email) {
