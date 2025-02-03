@@ -2,8 +2,7 @@
 import express from "express";
 //Coneccion a mongoAtlas
 import { connectDb } from "./config/connectDb";
-//Class localUser 
-import LocalUser from "./controllers/user/localUser"
+
 //Routes
 import localUserRoute from "./routes/users/localUsers";
 
@@ -27,4 +26,4 @@ server.on("error", error => {
     console.error("Error al intentar levantar el servidor:\n", error)
 })
 
-app.use("/", localUserRoute)
+app.use("/localUser/", localUserRoute)
