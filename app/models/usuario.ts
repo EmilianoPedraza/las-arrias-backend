@@ -18,8 +18,6 @@ filtros más eficientes, podés buscar todos los usuarios con
 const validEmail = new RegExp(EXPRESIONS_TYPES_VALID_USER.VALID_EMAIL)
 const valiUsername = new RegExp(EXPRESIONS_TYPES_VALID_USER.VALID_USERNAME)
 const validNameAndLastName = new RegExp(EXPRESIONS_TYPES_VALID_USER.FIRST_AND_LASTNAME)
-const validPasswrd = new RegExp(EXPRESIONS_TYPES_VALID_USER.VALID_PASSWORD)
-
 
 //?Esquema base de usuario
 const userBaseScrema = new Schema({
@@ -27,7 +25,7 @@ const userBaseScrema = new Schema({
     apellido: { type: String, required: true, match: validNameAndLastName },
     nombreUsuario: { type: String, required: true, unique: true, match: valiUsername },
     email: { type: String, required: true, unique: true, match: validEmail },
-    password: { type: String, required: true, match: validPasswrd },
+    password: { type: String, required: true },
     creadoEn: { type: Date, default: Date.now },
     actualizadoEn: { type: Date, default: Date.now },
 }, { discriminatorKey: "__t" })

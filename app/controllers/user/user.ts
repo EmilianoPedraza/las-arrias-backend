@@ -19,6 +19,16 @@ export default class User {
         // public creadoEn: Date,
         // public actualizadoEn: Date
     ) { }
+
+    //?BUSCAR UN USUARIO POR CAMPO, SI EXISTE RETORNA UN ARRAY CON EL USUARIO, CASO CONTRARIO FALSE
+    static buscarPorProps = async (prop: string, valor: string | number): Promise<FindUser | boolean | unknown> => {//!problema de tipado en retorno
+        const usuario = await UserModel.find({ [prop]: valor })
+        if (usuario.length > 0) {
+            return usuario[0]
+        }
+        return false
+    }
+
     //?ENCRIPTAR CONTRASEÑA
     encriptarPsw = async (): Promise<true | never> => {
         try {
@@ -39,15 +49,6 @@ export default class User {
         } catch (error) {
             throw new Error('Error procesando contraseña');
         }
-    }
-
-    //?BUSCAR UN USUARIO POR CAMPO, SI EXISTE RETORNA UN ARRAY CON EL USUARIO, CASO CONTRARIO FALSE
-    static buscarPorProps = async (prop: string, valor: string | number): Promise<FindUser | boolean | unknown> => {//!problema de tipado en retorno
-        const usuario = await UserModel.find({ [prop]: valor })
-        if (usuario.length > 0) {
-            return usuario[0]
-        }
-        return false
     }
 
     //?VALIDAR QUE UNA CADENA DE STRING TENGA EL FORMATO CORRECTO PARA SER EMAIL
@@ -107,7 +108,7 @@ export default class User {
             throw new Error('El nombre de usuario incumple las condiciones de formato')
         }
         if (await User.buscarPorProps('nombreUsuario', this.nombreUsuario)) {
-            throw new Error('El nombre de usuario ya existe')
+            throw new Error('El nombre de usuario ya existe en la base de datos')
         }
         //!Validaciones de email
         if (!this.email) {
@@ -118,6 +119,9 @@ export default class User {
         }
         if (!User.validarCorreo(this.email)) {
             throw new Error('El email no cumple con las condiciones de formato')
+        }
+        if (await User.buscarPorProps('email', this.email)) {
+            throw new Error('El email ya existe en la base de datos')
         }
         //!Validaciones de password
         if (!this.password) {

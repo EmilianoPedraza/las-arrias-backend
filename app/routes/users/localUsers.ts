@@ -11,19 +11,18 @@ localUserRoute.use(json())
 localUserRoute.use(express.urlencoded({ extended: true }))
 
 //?PARA CREACIÓN DE USUARIOS
-localUserRoute.post('/createUser', async (req, res) => {
+localUserRoute.post('/register', async (req, res) => {
     try {
         const { nombre, apellido, nombreUsuario, email, password, dni, telefono } = req.body
         const newUser = new localUser(dni, telefono, nombre, apellido, nombreUsuario, email, password)
         await newUser.createLocalUser()
-        console.log(newUser)
+        console.log('Nuevo Usuario-', newUser)
         res.status(200).json({ ok: true, user: newUser })
     } catch (err) {
-        res.status(400).json({ ok: false, error: { type: ErrorTypes.Unauthorized, message: 'err.message' } })
+        res.status(400).json({ ok: false, error: { type: ErrorTypes.Unauthorized, message: err.message } })
     }
-
 })
 localUserRoute.get("/prueba", (_, res) => {
     res.status(200).json({ ok: true })
 })
-export default localUserRoute
+export default localUserRoute  
