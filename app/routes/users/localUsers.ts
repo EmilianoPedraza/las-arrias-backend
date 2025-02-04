@@ -16,9 +16,10 @@ localUserRoute.post('/register', async (req, res) => {
         const { nombre, apellido, nombreUsuario, email, password, dni, telefono } = req.body
         const newUser = new localUser(dni, telefono, nombre, apellido, nombreUsuario, email, password)
         await newUser.createLocalUser()
-        console.log('Nuevo Usuario-', newUser)
+        console.log('Se guardo el usuario')
         res.status(200).json({ ok: true, user: newUser })
     } catch (err) {
+        console.log('No se guardo el usuario')
         res.status(400).json({ ok: false, error: { type: ErrorTypes.Unauthorized, message: err.message } })
     }
 })

@@ -1,7 +1,7 @@
 export enum EXPRESIONS_TYPES_VALID_USER {
-    FIRST_AND_LASTNAME = "^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$",
+    FIRST_AND_LASTNAME = "^(?!.*\\s{2})[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}(?:\\s[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}){0,2}$",
     VALID_EMAIL = "^[a-zA-Z1-9]+(\\.[a-zA-Z1-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$",
-    VALID_USERNAME = "^(?!.*[{}\\[\\]()\":;'?~`´^&-])(?=[a-zA-Z1-9_]+(\\.[a-zA-Z1-9_]+)*$)[a-zA-Z1-9_]+(\\.[a-zA-Z1-9_]+)*$",
+    VALID_USERNAME = "^(?!.*_\\.)[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9](?:[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9_.]*(?:\\.[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9])?)*$",
     VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+(?:\\.[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+)*[^.]$",
 }
 
@@ -12,14 +12,9 @@ export enum EXPRESIONS_TYPES_VALID_USER {
 
 
 
-
-
-
-
-
-
-
 //?                                          VALID_EMAIL:
+
+
 //*Expresión en formato JS:      /^[a-zA-Z1-9]+(\.[a-zA-Z1-9]+)*@[a-zA-Z]+\.[a-zA-Z]+$/
 /*
 Esta expresión regular está diseñada para validar correos electrónicos con caracteres alfanuméricos y puntos,
@@ -52,44 +47,50 @@ pero solo en ciertas posiciones y con una estructura básica de dominio.
 */
 
 
+
 //?                                     VALID_USERNAME:
-//*Expresión en formato JS:     /^(?!.*[{}\[\]()":;'?~`´^&-])(?=[a-zA-Z1-9_]+(\.[a-zA-Z1-9_]+)*$)[a-zA-Z1-9_]+(\.[a-zA-Z1-9_]+)*$/
+//*Expresión en formato JS:    /^(?!.*_\.)[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9](?:[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9_.]*(?:\.[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9])?)*$/
 /*
 Resumen de validaciones
+
+El string debe contener al menos tres caracteres válidos (letras o números).
 ✅ Permitidos
-            Letras (a-z, A-Z).
-            Números (1-9).
-            Guion bajo (_).
-            Punto (.) con la condición de que esté rodeado de caracteres permitidos y no sea consecutivo.
-🚫 No permitidos
-            Espacios en blanco.
-            Símbolos matemáticos (+, -, *, /, =, etc.).
-            Llaves, corchetes y paréntesis ({ } [ ] ( )).
-            Comillas (' " ).
-            Dos puntos y punto y coma (: ;).
-            Signo de pregunta (?).
-            Tildes y caracteres especiales (á, é, í, ó, ú, ñ, ~, ^, &, etc.).
-            Punto al inicio o al final.
-            Puntos consecutivos.
+            ✔ Letras (mayúsculas y minúsculas) con o sin acento, incluyendo la ñ
+            ✔ Números del 1 al 9
+            ✔ Puntos (.) bien posicionados (entre letras/números, sin estar al inicio o final)
+            ✔ Guion bajo (_) bien posicionado (entre letras/números, sin tocar un .)
+🚫Caracteres no permitidos
+        No admite espacios en blanco en ninguna parte del string.
+        No permite símbolos matemáticos como suma, resta, multiplicación, división o porcentajes.
+        No acepta paréntesis, corchetes ni llaves.
+        No permite signos de puntuación como dos puntos, punto y coma, signos de exclamación o interrogación.
+        No admite caracteres especiales como tilde (~), ampersand (&), arroba (@), comillas o apóstrofes.
+ 🚫Restricciones en el uso del punto (.)
+        No puede estar ubicado al inicio o al final del string.
+        No pueden existir dos o más puntos consecutivos.
+        No puede estar precedido ni seguido por un guion bajo (_).
+🚫Restricciones en el uso del guion bajo (_)
+        No puede ubicarse al inicio ni al final del string.
+        No puede estar seguido ni precedido por un punto (.).
 
 */
 
 //?                                     FIRST_AND_LASTNAME
-//*Expresión en formato JS:    /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/
+//*Expresión en formato JS: /^(?!.*\s{2})[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}(?:\s[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}){0,2}$/
 /*
 ✅ Lo que permite:
-            Letras mayúsculas y minúsculas (A-Z, a-z).
-            Letras con acento (ÁÉÍÓÚ, áéíóú).
-            La letra ñ en ambas formas (Ñ, ñ).
-            Cadenas sin espacios ni caracteres especiales.
-❌ Lo que NO permite:
-            Espacios en blanco (" ").
-            Guion bajo (_) o guion medio (-).
-            Puntos (.) o cualquier otro signo de puntuación.
-            Corchetes {}, [], paréntesis ().
-            Símbolos matemáticos (+, -, *, /, =, etc.).
-            Caracteres especiales como @, &, !, ?, :, ;, ", ', ~, etc..
+    ✔ Solo letras mayúsculas y minúsculas del alfabeto español (a-z, A-Z, ñ, Ñ, vocales con acento y diéresis).
+    ✔ Mínimo 3 letras antes de permitir un espacio.
+    ✔ Hasta 2 espacios, pero cada espacio debe estar seguido de al menos 3 letras.
+    ✔ No permite espacios dobles ni consecutivos.
+    ✔ No permite espacios al inicio o final del string.
 
+❌ Lo que NO permite:
+    ✖ Espacios consecutivos.
+    ✖ Espacios al principio o al final.
+    ✖ Números, guiones, subrayados, puntos, comas, corchetes,
+    llaves, paréntesis, signos de interrogación, exclamación, apóstrofes,
+    ampersands, arrobas o cualquier otro símbolo.
 */
 
 //?                                          VALID_PASSWORD
@@ -116,6 +117,3 @@ Resumen de validaciones
 */
 
 
-//?                                         VALID_DNI
-
-//*Expresión en formato JS                  /^\d{7,8}$/
