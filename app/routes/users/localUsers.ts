@@ -15,13 +15,16 @@ localUserRoute.use(express.urlencoded({ extended: true }))
 localUserRoute.post('/register', async (req, res) => {
     try {
         const { nombre, apellido, nombreUsuario, email, password, dni, telefono } = req.body
-        const newUser = new localUser(dni, telefono, nombre, apellido, nombreUsuario, email, password)
-        await newUser.createLocalUser()
+        await new localUser(dni, telefono, nombre, apellido, nombreUsuario, email, password)
+            .createLocalUser()
         res.status(200).json({ ok: true })
     } catch (err) {
         if (err instanceof UserError) {
-            res.status(err.status).json({ ok: false, error: true, type: err.type, message: err.message })
+            res.status(err.status).json({ error: err.type, message: err.message })
+            return
         }
+        //en caso de que no sea ningún error de clase extendida
+        res.status(500).send({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
     }
 })
 localUserRoute.get("/prueba", (_, res) => {

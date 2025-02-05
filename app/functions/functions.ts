@@ -10,16 +10,11 @@ const validType = (valor: Tipo, tipe: TipoValido): boolean => {
 
     return typeof valor === tipe
 }
-
-const validarCadena = (str: string) => {
-    if (validType(str, 'string')) {
-        const regex = /[{}\[\]\/\*]/;
-        return !regex.test(str); // Retorna true si NO contiene esos caracteres
-    }
-    throw new Error("validarCadena: El valor ingresado no es un string");
-
+//?VALIDAR QUE UNA CADENA DE STRING TENGA EL FORMATO EN BASE A UNA EXPRESIÓN REGULAR
+const validarStringConExpresion = (str: string, exp: string): boolean => {
+    const regex = new RegExp(exp);
+    return regex.test(str);//retorna true si es valido y false en caso contrario
 };
-
 
 const validarNumEntero = (num: number): boolean => {
     if (Number.isInteger(num)) {
@@ -30,6 +25,6 @@ const validarNumEntero = (num: number): boolean => {
     return false
 }
 
-export { validType, validarCadena, validarNumEntero };
+export { validType, validarNumEntero, validarStringConExpresion };
 
 

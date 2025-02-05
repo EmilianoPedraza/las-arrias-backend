@@ -58,7 +58,7 @@ export default class localUser extends User {
     //?CREAR UN NUEVO USUARIO
     async createLocalUser() {
         //?VALIDAR QUE TODOS LOS CAMPOS DE USER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
-        await this.validateUser()
+        await this.validateRegisterUser()
         //?VALIDAR QUE TODOS LOS CAMPOS DE lLOCALUSER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
         await this.validateLocalUser()
         //?SE CAMBIA LA CONTRASEÑA INGRESADA DESEDE EL LADO DEL CLIENTE POR UNA CONTRASEÑA ENCRIPTADA
