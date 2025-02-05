@@ -1,3 +1,5 @@
+//Clase de error personalizada extendida
+import { UserError } from "../../types/errors/userError"
 //Para encriptar contraseñas
 import bcrypt from "bcrypt"
 //Función que permite validar el tipo de dato de una variable
@@ -5,7 +7,7 @@ import { validType } from "../../functions/functions"
 //Tipos
 import { FindUser } from "../../types/modelTypes";
 //Para obtener expresiónes regulares de validación de strings
-import { EXPRESIONS_TYPES_VALID_USER } from "../../types/expresions";
+import { EXPRESIONS_TYPES_VALID_USER } from "../../types/enums/expresions";
 //Se importa el modelo de usuario creado para la base de datos
 import { User as UserModel } from "../../models/usuario"; // se utiliza 'as' para renombrar User a UserModel y así evitar conflictos
 
@@ -36,7 +38,7 @@ export default class User {
             this.password = newPsw
             return true
         } catch (error) {
-            throw new Error('Error procesando contraseña');
+            throw new UserError('Error procesando contraseña', "InternalServerError");
         }
     }
     //?COMPARAR CONTRASEÑA DESENCRIPTADA CON CONTRASEÑA ENCRIPTADA
@@ -47,7 +49,7 @@ export default class User {
             }
             return false
         } catch (error) {
-            throw new Error('Error procesando contraseña');
+            throw new UserError('El password no coincide', "Unauthorized");
         }
     }
 
@@ -79,59 +81,59 @@ export default class User {
     async validateUser() {
         //!Validaciones de nombre
         if (!this.nombre) {
-            throw new Error('El campo nombre no existe')
+            throw new UserError('El campo nombre no existe', "BadRequest")
         }
         if (!validType(this.nombre, 'string')) {
-            throw new Error('El nombre no es un tipo de dato valido')
+            throw new UserError('El nombre no es un tipo de dato valido', "BadRequest")
         }
         if (!User.validNombreYapellido(this.nombre)) {
-            throw new Error('El nombre incumple las condiciones de formato')
+            throw new UserError('El nombre incumple las condiciones de formato', "BadRequest")
         }
         //!Validaciones de apellido
         if (!this.apellido) {
-            throw new Error('El campo apellido no existe');
+            throw new UserError('El campo apellido no existe', "BadRequest");
         }
         if (!validType(this.apellido, 'string')) {
-            throw new Error('El apellido no es un tipo de dato valido')
+            throw new UserError('El apellido no es un tipo de dato valido', "BadRequest")
         }
         if (!User.validNombreYapellido(this.apellido)) {
-            throw new Error('El nombre incumple las condiciones de formato')
+            throw new UserError('El nombre incumple las condiciones de formato', "BadRequest")
         }
         //!Validaciones de nombre de usuario
         if (!this.nombreUsuario) {
-            throw new Error('El campo nombreUsuario no existe');
+            throw new UserError('El campo nombreUsuario no existe', "BadRequest");
         }
         if (!validType(this.nombreUsuario, 'string')) {
-            throw new Error('El nombre de usuario no es un tipo de dato valido')
+            throw new UserError('El nombre de usuario no es un tipo de dato valido', "BadRequest")
         }
         if (!User.validarNombreUsuario(this.nombreUsuario)) {
-            throw new Error('El nombre de usuario incumple las condiciones de formato')
+            throw new UserError('El nombre de usuario incumple las condiciones de formato', "BadRequest")
         }
         if (await User.buscarPorProps('nombreUsuario', this.nombreUsuario)) {
-            throw new Error('El nombre de usuario ya existe en la base de datos')
+            throw new UserError('El nombre de usuario ya existe en la base de datos', "Unauthorized")
         }
         //!Validaciones de email
         if (!this.email) {
-            throw new Error('El campo email no existe');
+            throw new UserError('El campo email no existe', "BadRequest");
         }
         if (!validType(this.email, 'string')) {
-            throw new Error('El email debe ser un string')
+            throw new UserError('El email debe ser un string', "BadRequest")
         }
         if (!User.validarCorreo(this.email)) {
-            throw new Error('El email no cumple con las condiciones de formato')
+            throw new UserError('El email no cumple con las condiciones de formato', "BadRequest")
         }
         if (await User.buscarPorProps('email', this.email)) {
-            throw new Error('El email ya existe en la base de datos')
+            throw new UserError('El email ya existe en la base de datos', "Unauthorized")
         }
         //!Validaciones de password
         if (!this.password) {
-            throw new Error('El campo password no existe');
+            throw new UserError('El campo password no existe', "BadRequest");
         }
         if (!validType(this.password, 'string')) {
-            throw new Error('El password debe ser un string')
+            throw new UserError('El password debe ser un string', "BadRequest")
         }
         if (!User.validPassword(this.password)) {
-            throw new Error('El password no cumple con las condiciones de formato')
+            throw new UserError('El password no cumple con las condiciones de formato', "BadRequest")
         }
 
     }

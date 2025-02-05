@@ -1,5 +1,5 @@
 //Expresiónes regulares para validar strings para datos del usuario
-import { EXPRESIONS_TYPES_VALID_USER } from "../types/expresions"
+import { EXPRESIONS_TYPES_VALID_USER } from "../types/enums/expresions"
 import { model, Schema } from "mongoose"
 
 //? schema con datos en común de los 2 roles de usuario
@@ -41,7 +41,14 @@ const VisitingUser = User.discriminator('VisitingUser', new Schema({}))
 //*Modelo de esquema de usuario local
 const LocalUser = User.discriminator('LocalUser',
     new Schema({
-        dni: { type: Number, required: true, unique: true },
+        dni: {
+            type: Number, required: true, unique: true, validate: {
+                validator: function (value: number) {
+                    return value >= 999999 && value <= 99999999;
+                },
+                message: "dni-valor invalido.",
+            },
+        },
         telefono: { type: Number, required: false },
         contribuciones: { type: Number, default: 0 }
     })

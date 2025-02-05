@@ -1,4 +1,6 @@
 import { LocalUser } from "../../models/usuario";
+//Modulo de errores personalizados
+import { UserError } from "../../types/errors/userError";
 //Función que permite validar el tipo de dato de una variable
 import { validType, validarNumEntero } from "../../functions/functions";
 //Clase base
@@ -18,22 +20,22 @@ export default class localUser extends User {
     //?VALIDAR QUE TODOS LOS CAMPOS DE lLOCALUSER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
     validateLocalUser = async () => {
         if (!this.dni) {//Validar que los campos no estén indefinidos
-            throw new Error("El campo dni no existe");
+            throw new UserError("El campo dni no existe", "BadRequest");
         }
         if (!validType(this.dni, 'number')) {//Validar que DNI sea de tipo number
-            throw new Error('El DNI no es un tipo de dato valido');
+            throw new UserError('El DNI no es un tipo de dato valido', "BadRequest");
         }
         if (!validarNumEntero(this.dni)) {//Validar que DNI sea de tipo entero y no decimal
-            throw new Error('El DNI incumple las condiciones de formato')
+            throw new UserError('El DNI incumple las condiciones de formato', "BadRequest")
         }
         if (!(this.dni >= 999999 && this.dni <= 99999999)) {//Validar que DNI sea de 7 o 8 digitos
-            throw new Error('El DNI incumple las condiciones de formato')
+            throw new UserError('El DNI incumple las condiciones de formato', "BadRequest")
         }
         if (await User.buscarPorProps('dni', this.dni)) {
-            throw new Error('El DNI de usuario ya existe')
+            throw new UserError('El DNI de usuario ya existe', "Unauthorized")
         }
         if (this.telefono && !validType(this.telefono, 'number')) {
-            throw new Error('El Número de telefono no es un tipo de dato valido');
+            throw new UserError('El Número de telefono no es un tipo de dato valido', "BadRequest");
         }
     }
     //?GUARDAR UN NUEVO DOCUMENTO(UN LOCALUSER)
@@ -50,8 +52,7 @@ export default class localUser extends User {
             })
             await nuevoUsuario.save()
         } catch (error) {
-            throw new Error('Error al intentar guardar el nuevo usuario en la base de datos');
-
+            throw new UserError('Error al intentar guardar el nuevo usuario en la base de datos', "InternalServerError");
         }
     }
     //?CREAR UN NUEVO USUARIO

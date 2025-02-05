@@ -1,6 +1,7 @@
 import express, { json } from "express"
-import { ErrorTypes } from "../../types/typesError"
-
+//Tipos de errores
+import { UserError } from "../../types/errors/userError"
+//controladores
 import localUser from "../../controllers/user/localUser"
 
 const { Router } = express
@@ -16,11 +17,11 @@ localUserRoute.post('/register', async (req, res) => {
         const { nombre, apellido, nombreUsuario, email, password, dni, telefono } = req.body
         const newUser = new localUser(dni, telefono, nombre, apellido, nombreUsuario, email, password)
         await newUser.createLocalUser()
-        console.log('Se guardo el usuario')
-        res.status(200).json({ ok: true, user: newUser })
+        res.status(200).json({ ok: true })
     } catch (err) {
-        console.log('No se guardo el usuario')
-        res.status(400).json({ ok: false, error: { type: ErrorTypes.Unauthorized, message: err.message } })
+        if (err instanceof UserError) {
+            res.status(err.status).json({ ok: false, error: true, type: err.type, message: err.message })
+        }
     }
 })
 localUserRoute.get("/prueba", (_, res) => {
