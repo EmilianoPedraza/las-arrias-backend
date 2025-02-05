@@ -28,7 +28,7 @@ localUserRoute.post('/register', async (req, res) => {
     }
 })
 
-
+//?PARA VALIDAR INGRESO DE USUARIOS
 localUserRoute.get('/login', async (req, res) => {
     try {
         const { nombreUsuario, password } = req.body

@@ -1,11 +1,14 @@
 //Modelo localUser
 import { LocalUser } from "../../../models/usuario";
 //Tipos de local user
-import { LocalUserTypeLogin } from "../../../types/typesLocalUser";
+import { ClientLocalUserType, LocalUserType } from "../../../types/typesLocalUser";
 //Modulo de errores personalizados
 import { UserError } from "../errors/userError";
 //Función que permite validar el tipo de dato de una variable
 import { validType, validarNumEntero } from "../../../functions/functions";
+
+
+
 //Clase base
 import User from "../user";
 export default class localUser extends User {
@@ -20,6 +23,9 @@ export default class localUser extends User {
     ) {
         super(nombre, apellido, nombreUsuario, email, password)
     }
+
+
+
     //?VALIDAR QUE TODOS LOS CAMPOS DE lLOCALUSER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
     validateLocalUser = async () => {
         if (!this.dni) {//Validar que los campos no estén indefinidos
@@ -41,6 +47,9 @@ export default class localUser extends User {
             throw new UserError('El Número de telefono no es un tipo de dato valido', "BadRequest");
         }
     }
+
+
+
     //?GUARDAR UN NUEVO DOCUMENTO(UN LOCALUSER)
     guardarNuevoLocalUser = async () => {
         try {
@@ -58,6 +67,9 @@ export default class localUser extends User {
             throw new UserError('Error al intentar guardar el nuevo usuario en la base de datos', "InternalServerError");
         }
     }
+
+
+
     //?REGISTRAR UN NUEVO USUARIO
     async registerLocalUser() {
         //Validar que todos los campos de User cumplan con sus condiciones de formato y más
@@ -70,17 +82,19 @@ export default class localUser extends User {
         await this.guardarNuevoLocalUser()
     }
 
+
+
     //?LOGIN DE USUARIO
-    static async loginLocalUser(nombreUser: string, password: string): Promise<LocalUserTypeLogin | void> {
+    static async loginLocalUser(nombreUser: string, password: string): Promise<ClientLocalUserType | UserError> {
         User.validarNombreUsuario(nombreUser)//valida el nombre de usuario, si no cumple con el formato de string genera error badrequest
         User.validarPassword(password)//valida la contraseña, si no cumple con el formato de string genera error badrequest
-        const user = await User.buscarPorProps('nombreUsuario', nombreUser) as localUser//retorna false si no existe el usuario, caso contrario lo trae
+        const user = await User.buscarPorProps('nombreUsuario', nombreUser) as LocalUserType//retorna false si no existe el usuario, caso contrario lo trae
         if (!user) {
             throw new UserError('El campo nombreUsuario no existe', "BadRequest");
         }
         if (await User.compararPsw(user.password, password)) {//Comparar contraseña provista por el usuario desde el cliente con el de la base de datos
-            const { nombre, apellido, nombreUsuario, email, telefono, dni } = user
-            return { nombre, apellido, nombreUsuario, email, telefono, dni }
+            const { _id, nombre, apellido, nombreUsuario, email, telefono, dni } = user
+            return { _id, nombre, apellido, nombreUsuario, email, telefono, dni }
         }
         throw new UserError('Contraseña incorrecta', 'Unauthorized');
     }

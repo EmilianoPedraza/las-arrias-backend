@@ -1,4 +1,5 @@
-export type LocalUserTypeLogin = {
+export type ClientLocalUserType = {
+    _id: string,
     nombre: string,
     apellido: string,
     nombreUsuario: string,
@@ -6,3 +7,6 @@ export type LocalUserTypeLogin = {
     dni: number,
     telefono: number | undefined
 }
+export type LocalUserType = {
+    password: string
+} & ClientLocalUserType

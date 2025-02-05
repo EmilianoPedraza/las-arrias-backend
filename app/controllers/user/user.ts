@@ -16,6 +16,8 @@ export default class User {
         // public creadoEn: Date,
         // public actualizadoEn: Date
     ) { }
+
+
     //?BUSCAR UN USUARIO POR CAMPO, SI EXISTE RETORNA UN ARRAY CON EL USUARIO, CASO CONTRARIO FALSE
     static buscarPorProps = async (prop: string, valor: string | number): Promise<object | boolean> => {//!problema de tipado en retorno
         const usuario = await UserModel.find({ [prop]: valor }).lean()
@@ -24,6 +26,7 @@ export default class User {
         }
         return false
     }
+
 
     //?ENCRIPTAR CONTRASEÑA
     encriptarPsw = async (): Promise<true | never> => {
@@ -35,7 +38,10 @@ export default class User {
             throw new UserError('Hubo un problema en la base de datos', "InternalServerError");
         }
     }
-    //?COMPARAR CONTRASEÑA DESENCRIPTADA CON CONTRASEÑA ENCRIPTADA
+
+
+
+    //?COMPARAR CONTRASEÑA CON CONTRASEÑA ENCRIPTADA:(internamente encripta la contraseña que no está encriptada para compararla con la que si originalmente)
     static compararPsw = async (pswEncr: string, psw: string): Promise<boolean | never> => {
         try {
             if (await bcrypt.compare(psw, pswEncr)) {
@@ -46,6 +52,9 @@ export default class User {
             throw new UserError('No se a podido combrobar correctamente la contraseña', "InternalServerError");
         }
     }
+
+
+
     //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN NOMBRE CON CONDICIONES DE FORMATO CORRECTO
     static validarNombre(nombre: string) {
         if (!nombre) {
@@ -58,7 +67,10 @@ export default class User {
             throw new UserError('El nombre incumple las condiciones de formato', "BadRequest")
         }
     }
-    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN APELLIDO CON CONDICIONES DE FORMATO CORRECTO
+
+
+
+    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN APELLIDO CON CONDICIONES DE FORMATO CORRECTO  O GENERA ERROR BADREQUEST
     static validarApellido(apellido: string) {
         if (!apellido) {
             throw new UserError('El campo apellido no existe', "BadRequest");
@@ -70,7 +82,10 @@ export default class User {
             throw new UserError('El apellido incumple las condiciones de formato', "BadRequest")
         }
     }
-    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN NOMBRE DE USUARIO CON CONDICIONES DE FORMATO CORRECTO O GENERA ERROR BADREQUEST
+
+
+
+    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN NOMBRE DE USUARIO CON CONDICIONES DE FORMATO CORRECTO  O GENERA ERROR BADREQUEST
     static validarNombreUsuario(nomUser: string) {
         if (!nomUser) {
             throw new UserError('El campo nombreUsuario no existe', "BadRequest");
@@ -82,7 +97,9 @@ export default class User {
             throw new UserError('El nombre de usuario incumple las condiciones de formato', "BadRequest")
         }
     }
-    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN EMAIL CON CONDICIONES DE FORMATO CORRECTO
+
+
+    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN EMAIL CON CONDICIONES DE FORMATO CORRECTO  O GENERA ERROR BADREQUEST
     static validarEmail(email: string) {
         if (!email) {
             throw new UserError('El campo email no existe', "BadRequest");
@@ -94,6 +111,10 @@ export default class User {
             throw new UserError('El email no cumple con las condiciones de formato', "BadRequest")
         }
     }
+
+
+
+    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN PASSWORD CON CONDICIONES DE FORMATO CORRECTO  O GENERA ERROR BADREQUEST
     static validarPassword(password: string) {
         if (!password) {
             throw new UserError('El campo password no existe', "BadRequest");
