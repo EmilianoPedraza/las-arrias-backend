@@ -1,5 +1,5 @@
 //Expresiónes regulares para validar strings para datos del usuario
-import { EXPRESIONS_TYPES_VALID_USER } from "../types/enums/expresions"
+import { EXPRESIONS_TYPES_VALID_USER } from "../enums/expresions"
 import { model, Schema } from "mongoose"
 
 //? schema con datos en común de los 2 roles de usuario

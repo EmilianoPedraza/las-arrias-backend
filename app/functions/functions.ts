@@ -16,6 +16,8 @@ const validarStringConExpresion = (str: string, exp: string): boolean => {
     return regex.test(str);//retorna true si es valido y false en caso contrario
 };
 
+
+//?VALIDAR SI UN NÚMERO ES ENTERO
 const validarNumEntero = (num: number): boolean => {
     if (Number.isInteger(num)) {
         //Se cumple si el número es entero
