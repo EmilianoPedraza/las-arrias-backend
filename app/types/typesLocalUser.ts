@@ -5,7 +5,7 @@ export type ClientLocalUserType = {
     nombreUsuario: string,
     email: string,
     dni: number,
-    telefono: number | undefined
+    telefono?: number
 }
 export type LocalUserType = {
     password: string
