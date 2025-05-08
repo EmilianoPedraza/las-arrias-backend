@@ -4,7 +4,7 @@ import express from "express";
 import { connectDb } from "./config/connectDb";
 
 //Routes
-import localUserRoute from "./routes/users/localUsers";
+import localUserRoute from "./routes/users/localUsers/localUsers";
 
 
 const app = express()

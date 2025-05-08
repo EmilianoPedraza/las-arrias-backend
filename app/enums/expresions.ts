@@ -9,7 +9,6 @@ export enum EXPRESIONS_TYPES_VALID_USER {
 
 
 
-
 //?                                          VALID_EMAIL:
 
 
@@ -115,3 +114,6 @@ El string debe contener al menos tres caracteres válidos (letras o números).
 */
 
 
+export const SECRET_VALID_USER = {
+    secret: 'asdfga91478645--@@#$%(*&%)asdñññasdff1233lkjhgasdfiuhfaih98'
+}
