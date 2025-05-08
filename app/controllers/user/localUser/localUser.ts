@@ -85,7 +85,7 @@ export default class localUser extends User {
 
 
     //?LOGIN DE USUARIO
-    static async loginLocalUser(nombreUser: string, password: string): Promise<ClientLocalUserType | UserError> {
+    static async loginLocalUser(nombreUser: string, password: string): Promise<ClientLocalUserType> {
         User.validarNombreUsuario(nombreUser)//valida el nombre de usuario, si no cumple con el formato de string genera error badrequest
         User.validarPassword(password)//valida la contraseña, si no cumple con el formato de string genera error badrequest
         const user = await User.buscarPorProps('nombreUsuario', nombreUser) as LocalUserType//retorna false si no existe el usuario, caso contrario lo trae

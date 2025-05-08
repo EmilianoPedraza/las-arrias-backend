@@ -1,6 +1,7 @@
 
 import express, { json } from "express"
 import registerRoutes from "./registerRoutes"
+import loginRoutes from "./loginRoutes"
 
 
 const { Router } = express
@@ -20,4 +21,5 @@ localUserRoute.get("/prueba", (_, res) => {
 })
 
 localUserRoute.use("/", registerRoutes)
+localUserRoute.use("/", loginRoutes)
 export default localUserRoute  
