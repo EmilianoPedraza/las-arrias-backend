@@ -3,7 +3,7 @@
 import { ClientLocalUserType } from "../../../types/typesLocalUser"
 import { SECRET_VALID_USER } from "../../../enums/expresions"
 
-import express, { json, Request, NextFunction } from "express"
+import express, { json } from "express"
 
 
 //
