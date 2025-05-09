@@ -34,13 +34,20 @@ const createToken = (user: ClientLocalUserType): string => {
     const token = jsw.sign({ user }, SECRET_VALID_USER.secret, { expiresIn: '1h' })
     return token
 }
-// Extend the Request interface to include the user property
+// Extender interfaz de solicitud para incluir la propiedad del usuario
 declare global {
     namespace Express {
         interface Request {
             user?: ClientLocalUserType;
         }
     }
+}
+
+const COOKIES_LOG_OPTIONS = {
+    httpOnly: true,//la coookie solo se puede acceder en el servidor
+    secure: true,//la cokki solo se puede acceder en https
+    sameSite: "strict" as "strict",// la cookie solo se puede acceder en el mismo dominio
+    signed: true, // importante si queremos validar firmas
 }
 
 
@@ -68,14 +75,9 @@ loginUser.post('/login', validarCredenciales, async (req, res) => {
     try {
         const user = req.user
         const token = createToken(user as ClientLocalUserType)
-        res.status(200)
-            .cookie("acces_token", token, {
-                httpOnly: true,//la coookie solo se puede acceder en el servidor
-                // secure: true,//la cokki solo se puede acceder en https
-                //sameSite: "strict",// la cookie solo se puede acceder en el mismo dominio
-                signed: true, // 🔒 importante si queremos validar firmas
-                maxAge: 60 * 60 * 1000 // 1 hora
-            })
+        res
+            .status(200)
+            .cookie("acces_token", token, { ...COOKIES_LOG_OPTIONS, maxAge: 60 * 60 * 1000 /* 1 hora*/ })
             .json({ ok: true })
     } catch (err) {
         res.status(500).send({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
@@ -86,16 +88,7 @@ loginUser.post('/login', validarCredenciales, async (req, res) => {
 //?PARA ELIMINAR TOKEN
 
 loginUser.post("/logout", (_, res) => {
-    res.clearCookie("acces_token", {
-        httpOnly: true,//la coookie solo se puede acceder en el servidor
-        //secure: false,//la cokki solo se puede acceder en https
-        signed: true,
-        //sameSite: "strict",// la cookie solo se puede acceder en el mismo dominio
-        //httpOnly: true,//la coookie solo se puede acceder en el servidor
-        //secure: true,//la cokki solo se puede acceder en https
-        //sameSite: "strict",// la cookie solo se puede acceder en el mismo dominio
-    })
-
+    res.clearCookie("acces_token", COOKIES_LOG_OPTIONS)
     res.json({ message: "Sesión cerrada, token eliminado correctamente" });
 })
 
