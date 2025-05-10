@@ -1,9 +1,8 @@
 
-//!SOLO PARA PRUEBAS USAMOS ESTE SECRET
 // Importaciones y tipos
 import { ClientLocalUserType } from "../../../types/typesLocalUser";
-import { SECRET_VALID_USER } from "../../../enums/expresions";
-import express, { json, Request, Response, NextFunction } from "express";
+import { loadEnvironmentVars, environmentVars } from "../../../config/config";
+import express, { json, Request, Response, NextFunction } from "express"
 
 //
 import cookieParser from 'cookie-parser';
@@ -17,6 +16,10 @@ import jsw from "jsonwebtoken"
 
 
 
+//Carga las variables de entorno 
+loadEnvironmentVars()
+const { SECRET_VALID_USER } = environmentVars()
+
 const { Router } = express
 const loginUser = Router()
 
@@ -27,11 +30,11 @@ loginUser.use(express.urlencoded({ extended: true }))
 
 //!SOLO POR EL MOMENTO
 // Se agrega cookie-parser como middleware
-loginUser.use(cookieParser(SECRET_VALID_USER.secret));
+loginUser.use(cookieParser(SECRET_VALID_USER as string));
 
 
 const createToken = (user: ClientLocalUserType): string => {
-    const token = jsw.sign({ user }, SECRET_VALID_USER.secret, { expiresIn: '1h' })
+    const token = jsw.sign({ user }, SECRET_VALID_USER as string, { expiresIn: '1h' })
     return token
 }
 // Extender interfaz de solicitud para incluir la propiedad del usuario
@@ -102,7 +105,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
         return;
     }
     try {
-        const userPayload = jsw.verify(token, SECRET_VALID_USER.secret);
+        const userPayload = jsw.verify(token, SECRET_VALID_USER as string);
         req.user = userPayload as ClientLocalUserType;
         next();
     } catch (error) {

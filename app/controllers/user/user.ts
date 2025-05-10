@@ -1,10 +1,15 @@
+import { loadEnvironmentVars, environmentVars } from "../../config/config";
 
 import { UserError } from "./errors/userError"//Clase de error personalizada extendida
 import bcrypt from "bcrypt"//Para encriptar contraseñas
 import { validType, validarStringConExpresion } from "../../functions/functions"//Función que permite validar el tipo de dato de una variable
-import { EXPRESIONS_TYPES_VALID_USER } from "../../enums/expresions";//Para obtener expresiónes regulares de validación de strings
 //Se importa el modelo de usuario creado para la base de datos
 import { User as UserModel } from "../../models/usuario"; // se utiliza 'as' para renombrar User a UserModel y así evitar conflictos
+
+
+//Carga las variables de entorno 
+loadEnvironmentVars()
+const { FIRST_AND_LASTNAME, VALID_USERNAME, VALID_PASSWORD, VALID_EMAIL } = environmentVars()
 
 export default class User {
     constructor(
@@ -63,7 +68,7 @@ export default class User {
         if (!validType(nombre, 'string')) {
             throw new UserError('El nombre no es un tipo de dato valido', "BadRequest")
         }
-        if (!validarStringConExpresion(nombre, EXPRESIONS_TYPES_VALID_USER.FIRST_AND_LASTNAME)) {
+        if (!validarStringConExpresion(nombre, FIRST_AND_LASTNAME as string)) {
             throw new UserError('El nombre incumple las condiciones de formato', "BadRequest")
         }
     }
@@ -78,7 +83,7 @@ export default class User {
         if (!validType(apellido, 'string')) {
             throw new UserError('El apellido no es un tipo de dato valido', "BadRequest")
         }
-        if (!validarStringConExpresion(apellido, EXPRESIONS_TYPES_VALID_USER.FIRST_AND_LASTNAME)) {
+        if (!validarStringConExpresion(apellido, FIRST_AND_LASTNAME as string)) {
             throw new UserError('El apellido incumple las condiciones de formato', "BadRequest")
         }
     }
@@ -93,7 +98,7 @@ export default class User {
         if (!validType(nomUser, 'string')) {
             throw new UserError('El nombre de usuario no es un tipo de dato valido', "BadRequest")
         }
-        if (!validarStringConExpresion(nomUser, EXPRESIONS_TYPES_VALID_USER.VALID_USERNAME)) {
+        if (!validarStringConExpresion(nomUser, VALID_USERNAME as string)) {
             throw new UserError('El nombre de usuario incumple las condiciones de formato', "BadRequest")
         }
     }
@@ -107,7 +112,7 @@ export default class User {
         if (!validType(email, 'string')) {
             throw new UserError('El email debe ser un string', "BadRequest")
         }
-        if (!validarStringConExpresion(email, EXPRESIONS_TYPES_VALID_USER.VALID_EMAIL)) {
+        if (!validarStringConExpresion(email, VALID_EMAIL as string)) {
             throw new UserError('El email no cumple con las condiciones de formato', "BadRequest")
         }
     }
@@ -122,7 +127,7 @@ export default class User {
         if (!validType(password, 'string')) {
             throw new UserError('El password debe ser un string', "BadRequest")
         }
-        if (!validarStringConExpresion(password, EXPRESIONS_TYPES_VALID_USER.VALID_PASSWORD)) {
+        if (!validarStringConExpresion(password, VALID_PASSWORD as string)) {
             throw new UserError('El password no cumple con las condiciones de formato', "BadRequest")
         }
     }

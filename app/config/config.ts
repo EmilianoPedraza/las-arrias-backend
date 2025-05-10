@@ -3,28 +3,34 @@ import path from "path";
 
 
 const ruta = path.resolve(__filename, "../../../.env")
-console.log(ruta)
-
 
 /**
  * Carga las variables de entorno desde un archivo .env utilizando dotenv,
  * y devuelve un objeto con las configuraciones necesarias para seguridad
  * y validaciones de usuario en la aplicación.
- * 
- * Variables devueltas:
+ */
+
+export const loadEnvironmentVars = () => {
+    dotenv.config({
+        path: ruta
+    })
+}
+
+/**
+ *  * Variables de process.env:
  * - SECRET_VALID_USER: Clave secreta para firmar tokens y cookies de sesión.
  * - FIRST_AND_LASTNAME: Expresión regular para validar nombres y apellidos.
  * - VALID_EMAIL: Expresión regular para validar correos electrónicos.
  * - VALID_USERNAME: Expresión regular para validar nombres de usuario.
  * - VALID_PASSWORD: Expresión regular para validar contraseñas seguras.
  */
-
-export default function env() {
-    dotenv.config({
-        path: path.resolve(ruta)
-    })
+export const environmentVars = () => {
     const { SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD } = process.env
     return { SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD }
 }
+
+
+
+
 
 
