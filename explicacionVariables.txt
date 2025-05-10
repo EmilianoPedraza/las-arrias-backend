@@ -1,18 +1,10 @@
-// export enum EXPRESIONS_TYPES_VALID_USER {
-//     FIRST_AND_LASTNAME = "^(?!.*\\s{2})[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}(?:\\s[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}){0,2}$",
-//     VALID_EMAIL = "^[a-zA-Z1-9]+(\\.[a-zA-Z1-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$",
-//     VALID_USERNAME = "^(?!.*_\\.)[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9](?:[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9_.]*(?:\\.[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9])?)*$",
-//     VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+(?:\\.[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+)*[^.]$",
-// }
-
-
 
 
 
 //?                                          VALID_EMAIL:
 
 
-//*Expresión en formato JS:      /^[a-zA-Z1-9]+(\.[a-zA-Z1-9]+)*@[a-zA-Z]+\.[a-zA-Z]+$/
+//*Expresión en formato JS:     
 /*
 Esta expresión regular está diseñada para validar correos electrónicos con caracteres alfanuméricos y puntos,
 pero solo en ciertas posiciones y con una estructura básica de dominio.
@@ -46,7 +38,7 @@ pero solo en ciertas posiciones y con una estructura básica de dominio.
 
 
 //?                                     VALID_USERNAME:
-//*Expresión en formato JS:    /^(?!.*_\.)[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9](?:[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9_.]*(?:\.[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9])?)*$/
+//*Expresión en formato JS:   
 /*
 Resumen de validaciones
 
@@ -73,7 +65,7 @@ El string debe contener al menos tres caracteres válidos (letras o números).
 */
 
 //?                                     FIRST_AND_LASTNAME
-//*Expresión en formato JS: /^(?!.*\s{2})[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}(?:\s[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}){0,2}$/
+//*Expresión en formato JS: 
 /*
 ✅ Lo que permite:
     ✔ Solo letras mayúsculas y minúsculas del alfabeto español (a-z, A-Z, ñ, Ñ, vocales con acento y diéresis).
@@ -91,7 +83,7 @@ El string debe contener al menos tres caracteres válidos (letras o números).
 */
 
 //?                                          VALID_PASSWORD
-//*Expresión en formato JS:         "^(?!.*\\.\\.)[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+(?:\\.[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+)*[^.]$"
+//*Expresión en formato JS:    
 /*
 2️⃣ Validaciones que realiza
 ✅ Lo que permite:
