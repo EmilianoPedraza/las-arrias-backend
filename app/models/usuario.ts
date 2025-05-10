@@ -1,6 +1,10 @@
 //Expresiónes regulares para validar strings para datos del usuario
-import { EXPRESIONS_TYPES_VALID_USER } from "../enums/expresions"
+import { loadEnvironmentVars, environmentVars } from "../config/config"
 import { model, Schema } from "mongoose"
+
+
+loadEnvironmentVars()
+const { VALID_EMAIL, VALID_USERNAME, FIRST_AND_LASTNAME } = environmentVars()
 
 //? schema con datos en común de los 2 roles de usuario
 // El discriminator es una forma de tener todos los usuarios en una misma colección,
@@ -15,9 +19,9 @@ filtros más eficientes, podés buscar todos los usuarios con
 
 
 //expresiónes regulares desde una cadena de texto correspondiente a una expresión regular
-const validEmail = new RegExp(EXPRESIONS_TYPES_VALID_USER.VALID_EMAIL)
-const valiUsername = new RegExp(EXPRESIONS_TYPES_VALID_USER.VALID_USERNAME)
-const validNameAndLastName = new RegExp(EXPRESIONS_TYPES_VALID_USER.FIRST_AND_LASTNAME)
+const validEmail = new RegExp(VALID_EMAIL as string)
+const valiUsername = new RegExp(VALID_USERNAME as string)
+const validNameAndLastName = new RegExp(FIRST_AND_LASTNAME as string)
 
 //?Esquema base de usuario
 const userBaseScrema = new Schema({

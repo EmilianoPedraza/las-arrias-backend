@@ -1,6 +1,5 @@
+import { loadEnvironmentVars, environmentVars } from "../../../config/config";
 
-
-import { SECRET_VALID_USER } from "../../../enums/expresions"
 import cookieParser from 'cookie-parser';
 
 import express, { json } from "express"
@@ -9,7 +8,8 @@ import { UserError } from "../../../controllers/user/errors/userError"
 //controladores
 import localUser from "../../../controllers/user/localUser/localUser"
 
-
+loadEnvironmentVars()
+const { SECRET_VALID_USER } = environmentVars()
 
 const { Router } = express
 const registerRoutes = Router()
@@ -20,7 +20,7 @@ registerRoutes.use(express.urlencoded({ extended: true }))
 
 
 // ✅ Se agrega cookie-parser como middleware
-registerRoutes.use(cookieParser(SECRET_VALID_USER.secret));
+registerRoutes.use(cookieParser(SECRET_VALID_USER));
 
 
 //?PARA CREACIÓN DE USUARIOS
