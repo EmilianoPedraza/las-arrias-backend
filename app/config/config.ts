@@ -28,16 +28,3 @@ export default function env() {
 }
 
 
-
-// import parseArgs from "minimist"
-
-// const options = {
-//     alias: {
-//         m: 'modo',
-//         p: 'port'
-//     },
-//     default: {
-//         modo: "dev",
-//         port: 8080,
-//     }
-// }
