@@ -13,23 +13,26 @@
   "author": "José Emiliano Pedraza",
   "license": "ISC",
   "dependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/jsonwebtoken": "^9.0.9",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "5.1.1",
     "connect-mongo": "5.1.0",
-    "cookie-parser": "^1.4.7",
+    "cookie-parser": "1.4.7",
     "cors": "2.8.5",
     "dotenv": "16.4.7",
     "express": "4.21.2",
     "express-session": "1.18.1",
-    "jsonwebtoken": "^9.0.2",
+    "jsonwebtoken": "9.0.2",
+    "minimist": "1.2.8",
     "mongoose": "8.9.5",
     "socket.io": "4.8.1",
-    "typescript": "^5.8.3"
+    "typescript": "5.8.3"
   },
   "devDependencies": {
-    "@types/cookie-parser": "^1.4.8",
+    "@types/bcrypt": "5.0.2",
+    "@types/jsonwebtoken": "9.0.9",
+    "@types/cookie-parser": "1.4.8",
+    "@types/dotenv": "6.1.1",
     "@types/express": "5.0.0",
+    "@types/minimist": "1.2.5",
     "concurrently": "9.1.2",
     "nodemon": "3.1.9"
   }
