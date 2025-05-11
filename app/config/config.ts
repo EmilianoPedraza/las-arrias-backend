@@ -1,6 +1,10 @@
 import dotenv from "dotenv"
-import path from "path";
 
+import minimist from "minimist";
+
+export const isDev = minimist(process.argv.slice(2)).mode === "dev"
+
+import path from "path";
 
 const ruta = path.resolve(__filename, "../../../.env")
 
