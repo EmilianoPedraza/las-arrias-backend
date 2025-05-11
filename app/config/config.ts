@@ -22,6 +22,7 @@ export const loadEnvironmentVars = () => {
 
 /**
  *  * Variables de process.env:
+ * - MONGO_CLOUSER_LA: Ruta de coneccion para clouser mongo atlas.
  * - SECRET_VALID_USER: Clave secreta para firmar tokens y cookies de sesión.
  * - FIRST_AND_LASTNAME: Expresión regular para validar nombres y apellidos.
  * - VALID_EMAIL: Expresión regular para validar correos electrónicos.
@@ -29,8 +30,8 @@ export const loadEnvironmentVars = () => {
  * - VALID_PASSWORD: Expresión regular para validar contraseñas seguras.
  */
 export const environmentVars = () => {
-    const { SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD } = process.env
-    return { SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD }
+    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD } = process.env
+    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD }
 }
 
 
