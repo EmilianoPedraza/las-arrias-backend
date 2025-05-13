@@ -5,6 +5,7 @@ import { connectDb } from "./config/connectDb";
 
 //Routes
 import localUserRoute from "./routes/users/localUsers/localUsers";
+import visitinUserRoute from "./routes/users/visitingUsers/visitingUsers";
 
 
 const app = express()
@@ -27,3 +28,4 @@ server.on("error", error => {
 })
 
 app.use("/localUser/", localUserRoute)
+app.use("/visitingUser/", visitinUserRoute)
