@@ -1,5 +1,5 @@
 //IMPORTACIONES Y TIPOS
-import { ClientLocalUserType } from "../../../types/typesLocalUser";
+import { ClientLocalUserType, LocalUserType } from "../../../types/typesLocalUser";
 import { loadEnvironmentVars, environmentVars, isDev } from "../../../config/config";
 import express, { json, Request, Response, NextFunction } from "express";
 
@@ -57,7 +57,7 @@ loginUser.use(cookieParser(SECRET_VALID_USER as string));
  * @param user - Usuario autenticado
  * @returns Token firmado como string
  */
-const createToken = (user: ClientLocalUserType): string => {
+const createToken = (user: ClientLocalUserType | LocalUserType): string => {
     const token = jsw.sign({ user }, SECRET_VALID_USER as string, { expiresIn: '1h' })
     return token
 }
@@ -70,7 +70,7 @@ const createToken = (user: ClientLocalUserType): string => {
 declare global {
     namespace Express {
         interface Request {
-            user?: ClientLocalUserType;
+            userLocal?: ClientLocalUserType | LocalUserType;
         }
     }
 }
@@ -99,7 +99,7 @@ const validarCredenciales = async (req: Request, res: Response, next: NextFuncti
     const { nombreUsuario, password } = req.body;
     try {
         const user = await localUser.loginLocalUser(nombreUsuario, password);
-        req.user = user;
+        req.userLocal = user;
         next();
     } catch (err) {
         if (err instanceof UserError) {
@@ -119,12 +119,17 @@ const validarCredenciales = async (req: Request, res: Response, next: NextFuncti
 // Autentica al usuario y guarda el token en una cookie segura
 loginUser.post('/login', validarCredenciales, async (req, res) => {
     try {
-        const user = req.user
-        const token = createToken(user as ClientLocalUserType)
-        res
-            .status(200)
-            .cookie("acces_token", token, { ...COOKIES_LOG_OPTIONS, maxAge: 60 * 60 * 1000 /* 1 hora*/ })
-            .json({ ok: true })
+        const { userLocal } = req
+        if (userLocal) {
+            const token = createToken(userLocal)
+            res
+                .status(200)
+                .cookie("acces_token", token, { ...COOKIES_LOG_OPTIONS, maxAge: 60 * 60 * 1000 /* 1 hora*/ })
+                .json({ ok: true })
+        }
+        else {
+            throw new Error()
+        }
     } catch (err) {
         res.status(500).send({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
     }
@@ -159,7 +164,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
     }
     try {
         const userPayload = jsw.verify(token, SECRET_VALID_USER as string);
-        req.user = userPayload as ClientLocalUserType;
+        req.userLocal = userPayload as ClientLocalUserType;
         next();
     } catch (error) {
         res.status(401).json({ error: "Token inválido o expirado" });

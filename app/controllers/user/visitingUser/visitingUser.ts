@@ -1,7 +1,7 @@
 import { VisitingUser } from "../../../models/usuario";
 import { UserError } from "../errors/userError";
 import User from "../user";
-
+import { ClientVisitingUserType, VisitingUserType } from "../../../types/typesLocalUser";
 export default class visitingUser extends User {
     constructor(
         nombre: string,
@@ -37,4 +37,20 @@ export default class visitingUser extends User {
         await this.guardarNuevoVisitingUSser()
     }
 
+
+
+    //?LOGIN DE USUARIO
+    static async loginVisitinUser(nombreUser: string, password: string): Promise<ClientVisitingUserType> {
+        User.validarNombreUsuario(nombreUser)//valida el nombre de usuario, si no cumple con el formato de string genera error badrequest
+        User.validarPassword(password)//valida la contraseña, si no cumple con el formato de string genera error badrequest
+        const user = await User.buscarPorProps('nombreUsuario', nombreUser) as VisitingUserType//retorna false si no existe el usuario, caso contrario lo trae
+        if (!user) {
+            throw new UserError('El campo nombreUsuario no existe', "BadRequest");
+        }
+        if (await User.compararPsw(user.password, password)) {//Comparar contraseña provista por el usuario desde el cliente con el de la base de datos
+            const { _id, nombre, apellido, nombreUsuario, email } = user
+            return { _id, nombre, apellido, nombreUsuario, email }
+        }
+        throw new UserError('Contraseña incorrecta', 'Unauthorized');
+    }
 }

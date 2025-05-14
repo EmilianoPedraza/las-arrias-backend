@@ -2,7 +2,7 @@ import express, { json } from "express"
 
 import { UserError } from "../../../controllers/user/errors/userError"
 
-import visitingUser from "../../../controllers/user/visitingUser/visitingUse"
+import visitingUser from "../../../controllers/user/visitingUser/visitingUser"
 
 const { Router } = express
 const registerRoutes = Router()
