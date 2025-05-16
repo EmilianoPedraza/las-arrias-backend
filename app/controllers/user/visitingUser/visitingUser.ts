@@ -54,3 +54,4 @@ export default class visitingUser extends User {
         throw new UserError('Contraseña incorrecta', 'Unauthorized');
     }
 }
+
