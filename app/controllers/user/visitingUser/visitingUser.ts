@@ -1,7 +1,7 @@
 import { VisitingUser } from "../../../models/usuario";
 import { UserError } from "../errors/userError";
 import User from "../user";
-import { ClientVisitingUserType, VisitingUserType } from "../../../types/typesLocalUser";
+import { ClientVisitingUserType, VisitingUserType } from "../../../types/typeUser";
 export default class visitingUser extends User {
     constructor(
         nombre: string,
@@ -48,6 +48,7 @@ export default class visitingUser extends User {
             throw new UserError('El campo nombreUsuario no existe', "BadRequest");
         }
         if (await User.compararPsw(user.password, password)) {//Comparar contraseña provista por el usuario desde el cliente con el de la base de datos
+            console.log(user)
             const { _id, nombre, apellido, nombreUsuario, email } = user
             return { _id, nombre, apellido, nombreUsuario, email }
         }

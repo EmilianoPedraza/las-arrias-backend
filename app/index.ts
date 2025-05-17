@@ -6,7 +6,7 @@ import { connectDb } from "./config/connectDb";
 //Routes
 import localUserRoute from "./routes/users/localUsers/localUsers";
 import visitinUserRoute from "./routes/users/visitingUsers/visitingUsers";
-
+import login from "./routes/login"
 
 const app = express()
 
@@ -27,5 +27,6 @@ server.on("error", error => {
     console.error("Error al intentar levantar el servidor:\n", error)
 })
 
+app.use("/", login)
 app.use("/localUser/", localUserRoute)
 app.use("/visitingUser/", visitinUserRoute)

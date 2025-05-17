@@ -6,6 +6,7 @@ import { validType, validarStringConExpresion } from "../../functions/functions"
 //Se importa el modelo de usuario creado para la base de datos
 import { User as UserModel } from "../../models/usuario"; // se utiliza 'as' para renombrar User a UserModel y así evitar conflictos
 
+import { ClientUserType, UserType } from "../../types/typeUser";
 
 //Carga las variables de entorno 
 loadEnvironmentVars()
@@ -150,6 +151,21 @@ export default class User {
         }
         //!Validaciones de password
         User.validarPassword(this.password)//validar que el el string cumpla las condiciones
+    }
+
+    // //?LOGIN DE USUARIO
+    static async loginVisitinUser(nombreUser: string, password: string): Promise<UserType> {
+        User.validarNombreUsuario(nombreUser)//valida el nombre de usuario, si no cumple con el formato de string genera error badrequest
+        User.validarPassword(password)//valida la contraseña, si no cumple con el formato de string genera error badrequest
+        const user = await User.buscarPorProps('nombreUsuario', nombreUser) as ClientUserType //retorna false si no existe el usuario, caso contrario lo trae
+        if (!user) {
+            throw new UserError('El campo nombreUsuario no existe', "BadRequest");
+        }
+        if (await User.compararPsw(user.password, password)) {//Comparar contraseña provista por el usuario desde el cliente con el de la base de datos
+            const { _id, nombre, apellido, nombreUsuario, email, __t } = user
+            return { _id, nombre, apellido, nombreUsuario, email, __t }
+        }
+        throw new UserError('Contraseña incorrecta', 'Unauthorized');
     }
 }
 

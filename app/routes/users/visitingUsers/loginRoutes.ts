@@ -3,11 +3,8 @@ import express, { json, NextFunction, Request, Response } from "express"
 import cookieParser from "cookie-parser"
 //MANEJO DE TOKENS JWT
 import jsw from "jsonwebtoken";
-//CONTROLADOR DE USUARIOS LOCALES
-import visitingUser from "../../../controllers/user/visitingUser/visitingUser"
 //IMPORTACIONES Y TIPOS
-import { VisitingUserType, ClientVisitingUserType } from "../../../types/typesLocalUser"
-import { UserError } from "../../../controllers/user/errors/userError"
+import { VisitingUserType, ClientVisitingUserType } from "../../../types/typeUser"
 
 import { loadEnvironmentVars, environmentVars, isDev } from "../../../config/config"
 
@@ -52,73 +49,11 @@ const COOKIES_LOG_OPTIONS = {
 
 
 
-//* CREACIÓN DE TOKEN JWT
-/**
- * Genera un token JWT válido por 1 hora
- * @param user - Usuario autenticado
- * @returns Token firmado como string
- */
-const createToken = (userVisiting: ClientVisitingUserType | VisitingUserType): string => {
-    const token = jsw.sign({ userVisiting }, SECRET_VALID_USER as string, { expiresIn: '1h' })
-    return token
-}
-
-
-
-//---------------------------------------------------------------------------------------------------------------------------------------
-
-
-//? VALIDACIÓN DE INGRESO DE USUARIOS
-/**
- * Middleware para validar las credenciales del usuario.
- * Si son válidas, agrega el usuario al request y continúa.
- */
-const validarCredenciales = async (req: Request, res: Response, next: NextFunction) => {
-    const { nombreUsuario, password } = req.body;
-    try {
-        const user = await visitingUser.loginVisitinUser(nombreUsuario, password);
-        req.userVisiting = user;
-        next();
-    } catch (err) {
-        if (err instanceof UserError) {
-            res.status(err.status).json({ error: err.type, message: err.message })
-            return
-        }
-        res.status(500).json({ error: "InternalError", message: "Ocurrió un error inesperado" });
-    }
-};
-
-
-// //? LOGIN DE USUARIOS
-loginRoutes.post("/login", validarCredenciales, async (req, res) => {
-    try {
-        const { userVisiting } = req
-        if (userVisiting) {
-            const token = createToken(userVisiting)
-            res
-                .status(200)
-                .cookie("acces_token_visiting", token, { ...COOKIES_LOG_OPTIONS, maxAge: 60 * 60 * 1000 /* 1 hora*/ })
-                .json({ ok: true })
-        }
-        else {
-            throw new Error()
-        }
-    } catch (error) {
-        res.status(500).send({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
-    }
-})
-
-
-
-
-
-//---------------------------------------------------------------------------------------------------------------------------------------
-
 //? RUTA DE PRUEBA PROTEGIDA CON VERIFICACIÓN DE TOKEN
 // Middleware que verifica la validez del token
 // Si es válido, agrega el usuario al request
 const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
-    const token = req.signedCookies?.acces_token_visiting;
+    const token = req.signedCookies?.acces_token_VisitingUser;
     if (!token) {
         res.status(401).json({ error: 'token no encontrado: usuario invalido' });
         return;
@@ -149,7 +84,7 @@ loginRoutes.get("/protegido", verifyToken, (_, res) => {
 // Ruta POST /logout
 // Elimina la cookie del token para cerrar la sesión
 loginRoutes.post("/logout", (_, res) => {
-    res.clearCookie("acces_token_visiting", COOKIES_LOG_OPTIONS)
+    res.clearCookie("acces_token_VisitingUser", COOKIES_LOG_OPTIONS)
     res.json({ message: "Sesión cerrada, token eliminado correctamente" });
 })
 
