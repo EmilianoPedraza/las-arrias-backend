@@ -8,6 +8,7 @@ import localUserRoute from "./routes/users/localUsers/localUsers";
 import visitinUserRoute from "./routes/users/visitingUsers/visitingUsers";
 import login from "./routes/login"
 import acceesRoute from "./routes/accesToken";
+import logout from "./routes/logout"
 
 const app = express()
 
@@ -27,7 +28,7 @@ const server = app.listen(PORT, () => {
 server.on("error", error => {
     console.error("Error al intentar levantar el servidor:\n", error)
 })
-
+app.use("/", logout)
 app.use("/", login)
 app.use("/", acceesRoute)
 app.use("/localUser/", localUserRoute)

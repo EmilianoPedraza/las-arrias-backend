@@ -162,8 +162,8 @@ export default class User {
             throw new UserError('El campo nombreUsuario no existe', "BadRequest");
         }
         if (await User.compararPsw(user.password, password)) {//Comparar contraseña provista por el usuario desde el cliente con el de la base de datos
-            const { _id, nombre, apellido, nombreUsuario, email, __t } = user
-            return { _id, nombre, apellido, nombreUsuario, email, __t }
+            // const { _id, nombre, apellido, nombreUsuario, email, __t } = user
+            return user
         }
         throw new UserError('Contraseña incorrecta', 'Unauthorized');
     }

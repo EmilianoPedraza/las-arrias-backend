@@ -49,6 +49,8 @@ logoutUserRoute.post("/logout", (_, res) => {
 })
 
 
+export default logoutUserRoute
+
 
 
 

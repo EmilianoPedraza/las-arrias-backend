@@ -37,12 +37,18 @@ type ClientUser = ClientLocalUserType | ClientVisitingUserType
 
 //lo que se maneja en el backend
 export type UserType = {
-    __t?: string
-} & ClientUser
+    _id: string,
+    __t?: 'LocalUser' | 'VisitingUser'
+    nombre: string,
+    apellido: string,
+    nombreUsuario: string,
+    email: string,
+    dni?: number,
+    telefono?: number
+}
 
 //lo que se recive
 export type ClientUserType = {
-    __t?: string,
     password: string
 } & ClientUser
 

@@ -75,6 +75,20 @@ const validarCredenciales = async (req: Request, res: Response, next: NextFuncti
 };
 
 
+const response = (user: UserType) => {
+    const responseBasic = {
+        nombre: user.nombre,
+        apellido: user.apellido,
+        nombreUsuario: user.nombreUsuario,
+        email: user.email
+
+    }
+    if (user.__t == "LocalUser") {
+        return { telefono: user.telefono, ...responseBasic }
+    }
+    return responseBasic
+}
+
 // //? LOGIN DE USUARIOS
 loginUsersRoute.post("/login", validarCredenciales, async (req, res) => {
     try {
@@ -83,10 +97,13 @@ loginUsersRoute.post("/login", validarCredenciales, async (req, res) => {
             const { _id, __t } = userReqClient
             if (__t) {
                 const token = createToken({ _id, __t })
+
                 res
                     .status(200)
                     .cookie(`acces_token`, token, { ...COOKIES_LOG_OPTIONS, maxAge: 60 * 60 * 1000 /* 1 hora*/ })
-                    .json({ ok: true })
+                    .json(
+                        response(userReqClient)
+                    )
             }
         }
         else {
