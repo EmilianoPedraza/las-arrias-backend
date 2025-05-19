@@ -45,8 +45,9 @@ declare global {
  * @param user - Usuario autenticado
  * @returns Token firmado como string
  */
-const createToken = (userVisiting: UserType): string => {
-    const token = jsw.sign({ userVisiting }, SECRET_VALID_USER as string, { expiresIn: '1h' })
+const createToken = (userr: /*UserType*/ { _id: string, __t: string }): string => {
+
+    const token = jsw.sign(userr, SECRET_VALID_USER as string, { expiresIn: '1h' })
     return token
 }
 
@@ -79,12 +80,14 @@ loginUsersRoute.post("/login", validarCredenciales, async (req, res) => {
     try {
         const { userReqClient } = req
         if (userReqClient) {
-            console.log(userReqClient.__t)
-            const token = createToken(userReqClient)
-            res
-                .status(200)
-                .cookie(`acces_token_${userReqClient.__t}`, token, { ...COOKIES_LOG_OPTIONS, maxAge: 60 * 60 * 1000 /* 1 hora*/ })
-                .json({ ok: true })
+            const { _id, __t } = userReqClient
+            if (__t) {
+                const token = createToken({ _id, __t })
+                res
+                    .status(200)
+                    .cookie(`acces_token`, token, { ...COOKIES_LOG_OPTIONS, maxAge: 60 * 60 * 1000 /* 1 hora*/ })
+                    .json({ ok: true })
+            }
         }
         else {
             throw new Error()

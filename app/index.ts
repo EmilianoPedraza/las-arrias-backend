@@ -7,6 +7,7 @@ import { connectDb } from "./config/connectDb";
 import localUserRoute from "./routes/users/localUsers/localUsers";
 import visitinUserRoute from "./routes/users/visitingUsers/visitingUsers";
 import login from "./routes/login"
+import acceesRoute from "./routes/accesToken";
 
 const app = express()
 
@@ -28,5 +29,6 @@ server.on("error", error => {
 })
 
 app.use("/", login)
+app.use("/", acceesRoute)
 app.use("/localUser/", localUserRoute)
 app.use("/visitingUser/", visitinUserRoute)
