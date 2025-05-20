@@ -3,10 +3,7 @@ import { loadEnvironmentVars, environmentVars, isDev } from "./config";
 import mongoose from "mongoose";
 
 loadEnvironmentVars()
-const { MONGO_CLOUSER_LA } = environmentVars()
-
-
-const MONGO_COMPAS_DB_LA = "mongodb://localhost:27017/Las-Arrias-Web-Server"
+const { MONGO_CLOUSER_LA, MONGO_COMPAS_DB_LA } = environmentVars()
 
 const connectDb = async () => {
     try {

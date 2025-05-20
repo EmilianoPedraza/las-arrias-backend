@@ -2,6 +2,7 @@
 import express from "express";
 //Coneccion a mongoAtlas
 import { connectDb } from "./config/connectDb";
+import { loadEnvironmentVars, environmentVars } from "./config/config";
 
 //Routes
 import localUserRoute from "./routes/users/localUsers/localUsers";
@@ -16,9 +17,12 @@ const app = express()
 connectDb()
 
 
+loadEnvironmentVars()
+const { PORT } = environmentVars()
+
+
 
 //levantamiento del servidor
-const PORT: number = 8080
 const server = app.listen(PORT, () => {
     const port = server.address()
 

@@ -28,15 +28,17 @@ export const loadEnvironmentVars = () => {
  * - VALID_EMAIL: Expresión regular para validar correos electrónicos.
  * - VALID_USERNAME: Expresión regular para validar nombres de usuario.
  * - VALID_PASSWORD: Expresión regular para validar contraseñas seguras.
+ * - MONGO_COMPAS_DB_LA: Ruta de coneccion para desarrollo con mongo copass.
+ * -PORT: Puerto de la api.
  */
 export const environmentVars = () => {
-    const { MONGO_CLOUSER_LA, SECRET_VALID_USER } = process.env
+    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO_COMPAS_DB_LA, PORT } = process.env
     const FIRST_AND_LASTNAME = "^(?!.*\\s{2})[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}(?:\\s[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}){0,2}$"
     const VALID_EMAIL = "^[a-zA-Z1-9]+(\\.[a-zA-Z1-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$"
     const VALID_USERNAME = "^(?!.*_\\.)[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9](?:[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9_.]*(?:\\.[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9])?)*$"
     const VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+(?:\\.[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+)*[^.]$"
 
-    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD }
+    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO_COMPAS_DB_LA, PORT }
 }
 
 
