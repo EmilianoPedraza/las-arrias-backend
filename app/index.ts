@@ -1,5 +1,6 @@
-
 import express from "express";
+import cors from "cors"
+
 //Coneccion a mongoAtlas
 import { connectDb } from "./config/connectDb";
 import { loadEnvironmentVars, environmentVars } from "./config/config";
@@ -18,7 +19,7 @@ connectDb()
 
 
 loadEnvironmentVars()
-const { PORT } = environmentVars()
+const { PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS } = environmentVars()
 
 
 
@@ -32,6 +33,18 @@ const server = app.listen(PORT, () => {
 server.on("error", error => {
     console.error("Error al intentar levantar el servidor:\n", error)
 })
+
+
+app.use(cors({
+    origin: ORIGINS,
+    methods: METHODS,
+    allowedHeaders: ALLOWEDHEADERS,
+    credentials: CREDENTIALS,
+    //   exposedHeaders: ...,
+    //   optionsSuccessStatus: ...,
+    //   preflightContinue: ...,
+}))
+
 app.use("/", logout)
 app.use("/", login)
 app.use("/", acceesRoute)
