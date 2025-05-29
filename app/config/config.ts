@@ -36,18 +36,17 @@ export const loadEnvironmentVars = () => {
  * - CREDENTIALS: Opcion para cors.
  */
 export const environmentVars = () => {
-    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO_COMPAS_DB_LA, PORT, ORIGINS_PROD } = process.env
+    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO_COMPAS_DB_LA, PORT, ORIGINS_PROD, ORIGINS_DEV } = process.env
 
     const ALLOWEDHEADERS = [
         'Content-Type',
         'Authorization',
         'X-Requested-With',
         'Accept',
-        'Origin',
-        "multipart/form-data"]
+        'Origin']
     const METHODS = ['GET', 'POST', 'PUT', 'DELETE']
-    const ORIGINS = isDev ? "*" : ORIGINS_PROD
-    const CREDENTIALS = !isDev
+    const ORIGINS = isDev ? ORIGINS_DEV : ORIGINS_PROD
+    const CREDENTIALS = true
 
 
     const FIRST_AND_LASTNAME = "^(?!.*\\s{2})[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}(?:\\s[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}){0,2}$"
