@@ -23,7 +23,7 @@ export const loadEnvironmentVars = () => {
 /**
  *  * Variables de process.env:
  * - MONGO_CLOUSER_LA: Ruta de coneccion para clouser mongo atlas.
- * - SECRET_VALID_USER: Clave secreta para firmar tokens y cookies de sesión.
+ * - SECRET_VALID_USER: Clave secreta para firmar tokens y cookies de sesión_______.
  * - FIRST_AND_LASTNAME: Expresión regular para validar nombres y apellidos.
  * - VALID_EMAIL: Expresión regular para validar correos electrónicos.
  * - VALID_USERNAME: Expresión regular para validar nombres de usuario.
@@ -34,9 +34,11 @@ export const loadEnvironmentVars = () => {
  * - METHODS: Opcion para cors.
  * - ALLOWEDHEADERS : Opcion para cors.
  * - CREDENTIALS: Opcion para cors.
+ * - SECRET_LOG_ACCES_TOKEN:
+ * - SECRET_LOG_ACCES_USER_TOKEN:
  */
 export const environmentVars = () => {
-    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO_COMPAS_DB_LA, PORT, ORIGINS_PROD, ORIGINS_DEV } = process.env
+    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO_COMPAS_DB_LA, PORT, ORIGINS_PROD, ORIGINS_DEV, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN } = process.env
 
     const ALLOWEDHEADERS = [
         'Content-Type',
@@ -54,7 +56,7 @@ export const environmentVars = () => {
     const VALID_USERNAME = "^(?!.*_\\.)[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9](?:[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9_.]*(?:\\.[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9])?)*$"
     const VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+(?:\\.[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+)*[^.]$"
 
-    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO_COMPAS_DB_LA, PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS }
+    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO_COMPAS_DB_LA, PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN }
 }
 
 

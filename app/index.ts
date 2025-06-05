@@ -6,9 +6,9 @@ import { connectDb } from "./config/connectDb";
 import { loadEnvironmentVars, environmentVars } from "./config/config";
 
 //Routes
-import localUserRoute from "./routes/users/localUsers/localUsers";
-import visitinUserRoute from "./routes/users/visitingUsers/visitingUsers";
-import login from "./routes/login"
+import localUserRoute from "./routes/register/localUsers/localUsers";
+import visitinUserRoute from "./routes/register/visitingUsers/visitingUsers";
+import login from "./routes/login/login";
 import acceesRoute from "./routes/accesToken";
 import logout from "./routes/logout"
 
@@ -47,6 +47,10 @@ app.use(cors({
 
 app.use("/", logout)
 app.use("/", login)
+
+//solo de prueba
 app.use("/", acceesRoute)
+
+
 app.use("/localUser/", localUserRoute)
 app.use("/visitingUser/", visitinUserRoute)
