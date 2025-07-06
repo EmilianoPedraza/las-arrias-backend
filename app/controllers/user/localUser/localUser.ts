@@ -29,7 +29,7 @@ export default class localUser extends User {
     //?VALIDAR QUE TODOS LOS CAMPOS DE lLOCALUSER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
     validateLocalUser = async () => {
         if (!this.dni) {//Validar que los campos no estén indefinidos
-            throw new UserError("El campo dni no existe", "BadRequest");
+            throw new UserError("El campo DNI no existe", "BadRequest");
         }
         if (!validType(this.dni, 'number')) {//Validar que DNI sea de tipo number
             throw new UserError('El DNI no es un tipo de dato valido', "BadRequest");

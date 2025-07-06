@@ -51,10 +51,10 @@ export const environmentVars = () => {
     const CREDENTIALS = true
 
 
-    const FIRST_AND_LASTNAME = "^(?!.*\\s{2})[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}(?:\\s[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{3,}){0,2}$"
-    const VALID_EMAIL = "^[a-zA-Z1-9]+(\\.[a-zA-Z1-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$"
-    const VALID_USERNAME = "^(?!.*_\\.)[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9](?:[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9_.]*(?:\\.[A-Za-zÁáÉéÍíÓóÚúÜüÑñ0-9])?)*$"
-    const VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+(?:\\.[A-Za-zÁÉÍÓÚáéíóúÑñ1-9_]+)*[^.]$"
+    const FIRST_AND_LASTNAME = "^(?!.*\\s{2})[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}(?:\\s[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}){0,2}$"
+    const VALID_EMAIL = "^[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$"
+    const VALID_USERNAME = "^(?!.*\\.\\.)(?!.*_\\.)(?!.*\\._)[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9](?:[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9_.]*(?:\\.[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9])?)*$"
+    const VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÀÉÈÍÌÓÒÚÙáàéèíìúùÑñ0-9_]+(?:\\.[A-Za-zÁÀÉÈÍÌÓÒÚÙáàéèíìúùÑñ0-9_]+)*[^.]$"
 
     return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO_COMPAS_DB_LA, PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN }
 }

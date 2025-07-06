@@ -55,7 +55,7 @@ export default class User {
             }
             return false
         } catch (error) {
-            throw new UserError('No se a podido combrobar correctamente la contraseña', "InternalServerError");
+            throw new UserError('No se a podido comprobar correctamente la contraseña', "InternalServerError");
         }
     }
 
@@ -151,6 +151,9 @@ export default class User {
         }
         //!Validaciones de password
         User.validarPassword(this.password)//validar que el el string cumpla las condiciones
+        if (this.password.length < 7) {
+            throw new UserError('Longitud de password insuficiente', "BadRequest")
+        }
     }
 
     // //?LOGIN DE USUARIO

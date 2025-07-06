@@ -90,7 +90,7 @@ El string debe contener al menos tres caracteres válidos (letras o números).
         ✔ Letras mayúsculas y minúsculas (A-Z, a-z).
         ✔ Letras con tildes (ÁÉÍÓÚáéíóú).
         ✔ La letra Ñ y ñ.
-        ✔ Números del 1 al 9.
+        ✔ Números del 0 al 9.
         ✔ Guion bajo _.
         ✔ Puntos . (pero solo si están bien ubicados).
 
