@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors"
-
+//!PRUEBA
+import localCitizensRoutes from "./routes/admin/LocalCitizens"
+//!-------
 //Coneccion a mongoAtlas
 import { connectDb } from "./config/connectDb";
 import { loadEnvironmentVars, environmentVars } from "./config/config";
@@ -54,3 +56,7 @@ app.use("/", acceesRoute)
 
 app.use("/localUser/", localUserRoute)
 app.use("/visitingUser/", visitinUserRoute)
+
+//!PUREBA
+app.use('/admin', localCitizensRoutes)
+//!

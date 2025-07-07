@@ -52,3 +52,13 @@ export type ClientUserType = {
     password: string
 } & ClientUser
 
+
+
+//Para ciudadanos locales(para realizar nuevas cargas con permiso de administrador)
+
+export type LocalCitizens = {
+    _id: string,
+    nombre: string,
+    apellido: string,
+    dni: number,
+}
