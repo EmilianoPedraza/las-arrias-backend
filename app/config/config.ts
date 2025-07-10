@@ -28,6 +28,7 @@ export const loadEnvironmentVars = () => {
  * - VALID_EMAIL: Expresión regular para validar correos electrónicos.
  * - VALID_USERNAME: Expresión regular para validar nombres de usuario.
  * - VALID_PASSWORD: Expresión regular para validar contraseñas seguras.
+ * - SECRET_LOG_ADMIN_USER: Secret para coookie y json de user amdin
  * - MONGO_COMPAS_DB_LA: Ruta de coneccion para desarrollo con mongo copass.
  * - PORT: Puerto de la api.
  * - ORIGINS: Opcions para cors.
@@ -38,7 +39,7 @@ export const loadEnvironmentVars = () => {
  * - SECRET_LOG_ACCES_USER_TOKEN:
  */
 export const environmentVars = () => {
-    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO_COMPAS_DB_LA, PORT, ORIGINS_PROD, ORIGINS_DEV, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN } = process.env
+    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO_COMPAS_DB_LA, PORT, ORIGINS_PROD, ORIGINS_DEV, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER } = process.env
 
     const ALLOWEDHEADERS = [
         'Content-Type',
@@ -56,7 +57,7 @@ export const environmentVars = () => {
     const VALID_USERNAME = "^(?!.*\\.\\.)(?!.*_\\.)(?!.*\\._)[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9](?:[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9_.]*(?:\\.[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9])?)*$"
     const VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÀÉÈÍÌÓÒÚÙáàéèíìúùÑñ0-9_]+(?:\\.[A-Za-zÁÀÉÈÍÌÓÒÚÙáàéèíìúùÑñ0-9_]+)*[^.]$"
 
-    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO_COMPAS_DB_LA, PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN }
+    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO_COMPAS_DB_LA, PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER }
 }
 
 

@@ -3,10 +3,10 @@ import { LocalCitizensClass } from "../../controllers/ciudadanosLocales/ciudadan
 
 //tipos
 import { LocalCitizens } from '../../types/typeUser'
+import { ErrorCreateNewLocalCitizens } from '../../controllers/ciudadanosLocales/ciudadanosLocales'
 //route
 import express from "express"
 const { json, Router, urlencoded } = express
-
 const localCitizensRoutes = Router()
 
 localCitizensRoutes.use(json())
@@ -18,13 +18,14 @@ localCitizensRoutes.get('/prueba', (_, res) => {
     res.send('ok')
 })
 
-localCitizensRoutes.post('/agregar', async (req, res) => {
+localCitizensRoutes.post('/agregarCiudadanos', async (req, res) => {
     try {
         await LocalCitizensClass.createNewLocalCitizens(req.body as LocalCitizens[])
         res.status(200).json({ ok: true })
         return
     } catch (error) {
-        res.status(500).json({ ok: false, error: error })
+        const resError = LocalCitizensClass.errorCreateNewLocalCitizens(error as ErrorCreateNewLocalCitizens)
+        res.status(500).json({ ok: false, error: resError })
     }
 })
 export default localCitizensRoutes
