@@ -143,6 +143,22 @@ export class LocalCitizensClass {
         return 'unknownError';
     }
 
+    /**
+     * Verifica si existe un ciudadano en la base de datos con los datos proporcionados.
+     * 
+     * - Busca por nombre, apellido y dni combinados.
+     * 
+     * @param data Objeto con las propiedades `nombre`, `apellido` y `dni` a verificar.
+     * @returns `true` si el ciudadano existe, `false` en caso contrario.
+     */
+    static validateExistenceOfaCitizen = async (data: { nombre: string, apellido: string, dni: number | string }): Promise<boolean | void> => {
+        const { nombre: n, apellido: a, dni: d } = data
+        const usuario = await localCitizens.find({ nombre: n, apellido: a, dni: d }).lean()
+        if (usuario.length > 0) {
+            return true
+        }
+        return false
+    }
 }
 
 

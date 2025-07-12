@@ -6,7 +6,8 @@ import { ClientLocalUserType, LocalUserType } from "../../../types/typeUser";
 import { UserError } from "../errors/userError";
 //Función que permite validar el tipo de dato de una variable
 import { validType, validarNumEntero } from "../../../functions/functions";
-
+//
+import { LocalCitizensClass } from "../../ciudadanosLocales/ciudadanosLocales";
 
 
 //Clase base
@@ -70,15 +71,25 @@ export default class localUser extends User {
 
 
 
+    //?VALIDAR QUE EXISTA UN CIUDADANO QUE COINCIDA CON LOS DATOS DEL lOCALUSER
+    validateCitizen = async (): Promise<void> => {
+        const data = { nombre: this.nombre, apellido: this.apellido, dni: this.dni }
+        if (!await LocalCitizensClass.validateExistenceOfaCitizen(data)) {
+            throw new UserError('Los datos no coinciden con ningún ciudadano', "BadRequest");
+        }
+    }
+
     //?REGISTRAR UN NUEVO USUARIO
     async registerLocalUser() {
-        //Validar que todos los campos de User cumplan con sus condiciones de formato y más
+        //Validar que todos los campos de User cumplan con sus condiciones de formato y más.
         await this.validateRegisterUser()
-        //Validar que todos los campos de localUser cumplan con sus condiciones de formato y más
+        //Validar que todos los campos de localUser cumplan con sus condiciones de formato y más.
         await this.validateLocalUser()
+        //Validar que el usuario exista en la base de datos de ciudadanos.
+        await this.validateCitizen()
         //?SE CAMBIA LA CONTRASEÑA INGRESADA DESEDE EL LADO DEL CLIENTE POR UNA CONTRASEÑA ENCRIPTADA
         await this.encriptarPsw()
-        //se guarda el documento
+        //Se guarda el documento.
         await this.guardarNuevoLocalUser()
     }
 

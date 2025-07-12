@@ -89,7 +89,6 @@ const validarCredenciales = async (req: Request, res: Response, next: NextFuncti
 adminUserRoute.post('/login', validarCredenciales, async (req, res) => {
     try {
         const admin = req.userAdminClient as AdminUser
-        console.log('desde /login->', admin)
         if (admin) {
             const { _id, __t, nombre, apellido } = admin
             const token = createToken({ _id, __t }, SECRET_LOG_ADMIN_USER as string)
