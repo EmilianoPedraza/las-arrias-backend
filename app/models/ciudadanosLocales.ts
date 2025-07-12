@@ -24,5 +24,5 @@ const userLocalValidSchema = new Schema({
 })
 
 
-export const localCitizens = model('ValidatedLocalCitizens', userLocalValidSchema)
+export const localCitizens = model('LocalCitizens', userLocalValidSchema)
 

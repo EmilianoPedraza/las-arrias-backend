@@ -23,7 +23,7 @@ const administratorUsersShema = new Schema({
 }, { discriminatorKey: '__t' })
 
 
-const administratorUsersModel = model('administratorsUsers', administratorUsersShema)
+const administratorUsersModel = model('administrators', administratorUsersShema)
 
 
 

@@ -1,7 +1,7 @@
 
 import User from "../user/user";
 import { UserError } from "../user/errors/userError";
-import { adminUser } from '../../models/adminUser'
+import { adminUser } from '../../models/administrators'
 import { validarNumEntero, validType } from "../../functions/functions";
 import bcrypt from "bcrypt"//Para encriptar contraseñas
 
