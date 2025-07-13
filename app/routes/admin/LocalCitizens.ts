@@ -8,10 +8,17 @@ import { verifyAccesTokenAdminGeneral } from "../auth/midlewares"
 //tipos
 import { LocalCitizens } from '../../types/typeUser'
 import { ErrorCreateNewLocalCitizens } from '../../controllers/ciudadanosLocales/ciudadanosLocales'
+//!
+import User from "../../controllers/user/user"
 //route
-import express from "express"
-const { json, Router, urlencoded } = express
+import { json, Router, urlencoded, Request, Response, NextFunction } from "express"
 const localCitizensRoutes = Router()
+
+//!
+const { validarApellido, validarNombre } = User
+
+
+
 
 localCitizensRoutes.use(json())
 localCitizensRoutes.use(urlencoded({ extended: true }))
@@ -49,5 +56,42 @@ localCitizensRoutes.post('/addCitizen', verifyAccesTokenAdminGeneral, async (req
         //en caso de que no sea ningún error de clase extendida
         res.status(500).send({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
     }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+const validCitizen = async (req: Request, res: Response, next: NextFunction) => {
+    const { nombre: n, apellido: a, dni: d } = req.body
+    try {
+        validarNombre(n)
+        validarApellido(a)
+        await LocalCitizensClass.valydDni(d)
+        if (!await LocalCitizensClass.validateExistenceOfaCitizen(req.body)) {
+            throw new UserError('Los datos no coinciden con ningún ciudadano', "BadRequest");
+        }
+        next()
+    } catch (err) {
+        if (err instanceof UserError) {
+            res.status(err.status).json({ error: err.type, message: err.message })
+            return
+        }
+        //en caso de que no sea ningún error de clase extendida
+        res.status(500).send({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
+
+    }
+
+}
+
+localCitizensRoutes.post('/validCitizen', validCitizen, async (req, res) => {
+    res.status(200).json({ ok: true, user: req.body })
 })
 export default localCitizensRoutes

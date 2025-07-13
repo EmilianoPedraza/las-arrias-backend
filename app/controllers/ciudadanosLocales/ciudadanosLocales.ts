@@ -72,7 +72,7 @@ export class LocalCitizensClass {
      * @param dni DNI a validar.
      * @throws UserError si el DNI no cumple alguna condición.
      */
-    static valydDni = async (dni: number) => {
+    static valydDni = async (dni: number, shape: 'existence' | undefined = undefined) => {
         if (!dni) {//Validar que los campos no estén indefinidos
             throw new UserError("El campo DNI no existe", "BadRequest");
         }
@@ -85,8 +85,10 @@ export class LocalCitizensClass {
         if (!(dni >= 999999 && dni <= 99999999)) {//Validar que DNI sea de 7 o 8 digitos
             throw new UserError('El DNI incumple las condiciones de formato', "BadRequest")
         }
-        if (await LocalCitizensClass.buscarPorProps('dni', dni)) {
-            throw new UserError('El DNI de usuario ya existe', "Unauthorized")
+        if (shape === 'existence') {
+            if (await LocalCitizensClass.buscarPorProps('dni', dni)) {
+                throw new UserError('El DNI de usuario ya existe', "Unauthorized")
+            }
         }
     }
 
@@ -102,10 +104,9 @@ export class LocalCitizensClass {
     static oneAddCitizens = async (data: LocalCitizens) => {
         validarNombre(data.nombre)
         validarApellido(data.apellido)
-        await this.valydDni(data.dni)//validar DNI
+        await this.valydDni(data.dni, "existence")//validar DNI
         const newCitizens = new localCitizens(data)
         await newCitizens.save()
-
     }
 
     /**

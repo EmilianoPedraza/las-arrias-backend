@@ -44,7 +44,8 @@ const COOKIES_LOG_OPTIONS = {
 // Ruta POST /logout
 // Elimina la cookie del token para cerrar la sesión
 logoutUserRoute.post("/logout", (_, res) => {
-    res.clearCookie("acces_token", COOKIES_LOG_OPTIONS)
+    res.clearCookie("access_token", COOKIES_LOG_OPTIONS)
+    res.clearCookie("access_successful", COOKIES_LOG_OPTIONS)
     res.json({ message: "Sesión cerrada, token eliminado correctamente" });
 })
 
