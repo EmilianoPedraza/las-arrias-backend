@@ -91,7 +91,7 @@ const validCitizen = async (req: Request, res: Response, next: NextFunction) => 
 
 }
 
-localCitizensRoutes.post('/validCitizen', validCitizen, async (req, res) => {
-    res.status(200).json({ ok: true, user: req.body })
+localCitizensRoutes.post('/validCitizen', validCitizen, async (_, res) => {
+    res.status(200).json({ ok: true })
 })
 export default localCitizensRoutes
