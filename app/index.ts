@@ -1,33 +1,39 @@
 import express from "express";
 import cors from "cors"
-//!PRUEBA
+// Rutas para operaciones de administración de ciudadanos locales y usuarios administradores
 import localCitizensRoutes from "./routes/admin/LocalCitizens"
 import adminUserRoute from "./routes/admin/admin";
-//!-------
-//Coneccion a mongoAtlas
-import { connectDb } from "./config/connectDb";
-import { loadEnvironmentVars, environmentVars } from "./config/config";
 
-//Routes
+// Conexión a la base de datos MongoDB Atlas
+import { connectDb } from "./config/connectDb";
+
+// Configuraciones de entorno y entorno actual (desarrollo o producción)
+import { loadEnvironmentVars, environmentVars, isDev } from "./config/config";
+
+// Rutas de registro para usuarios locales y visitantes
 import localUserRoute from "./routes/register/localUsers/localUsers";
 import visitinUserRoute from "./routes/register/visitingUsers/visitingUsers";
+
+// Rutas de login, logout, verificación de tokens y validaciones de usuario
 import login from "./routes/login/login";
 import acceesRoute from "./routes/accesToken";
 import logout from "./routes/logout"
 import userChecks from "./routes/userChecks";
 
+
+
 const app = express()
+//middleware para saber el tiempo de respuesta
 
-//Conectar a mongo atlas
+// Establecer conexión con la base de datos MongoDB Atlas: internamente ya se asegura de cargar las variables de entorno
 connectDb()
-
-
+// Inicializar variables de entorno
 loadEnvironmentVars()
 const { PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS } = environmentVars()
 
 
 
-//levantamiento del servidor
+// Inicio del servidor en el puerto especificado
 const server = app.listen(PORT, () => {
     const port = server.address()
 
@@ -39,6 +45,17 @@ server.on("error", error => {
 })
 
 
+// Middleware de desarrollo: mide el tiempo de respuesta de cada solicitud HTTP
+if (isDev) {
+    try {
+        const responseTime = require('response-time');
+        app.use(responseTime());
+    } catch (error) {
+        console.log("No se ejecuto middleware response-time")
+    }
+}
+
+// Configuración del middleware CORS para control de acceso entre dominios
 app.use(cors({
     origin: ORIGINS,
     methods: METHODS,
@@ -49,20 +66,23 @@ app.use(cors({
     //   preflightContinue: ...,
 }))
 
+
+//?Rutas base para autenticación y sesión
 app.use("/", logout)
 app.use("/", login)
 
-//solo de prueba
+// Ruta para emitir o validar tokens de acceso //!(en etapa de pruebas)
 app.use("/", acceesRoute)
 
-
+// Registro de usuarios locales y visitantes
 app.use("/localUser/", localUserRoute)
 app.use("/visitingUser/", visitinUserRoute)
 
-//!PRUEBA PARA VALIDAR EXISTENCIA DE NOMBRE DE USUARIO
+// Validación de existencia de nombre de usuario //!(en etapa de pruebas y en desarrollo aún)
 app.use("/check", userChecks)
 
-//!PUREBA
-app.use('/admin', localCitizensRoutes)
+// Rutas exclusivas para administración //!(en etapa de pruebas y en desarrollo aún)
 app.use('/admin', adminUserRoute)
-//!
+
+// Rutas para operaciones de administración y validación de ciudadanos locales //!(en etapa de pruebas y en desarrollo aún)
+app.use('/admin', localCitizensRoutes)
