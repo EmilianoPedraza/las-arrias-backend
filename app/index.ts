@@ -14,6 +14,7 @@ import visitinUserRoute from "./routes/register/visitingUsers/visitingUsers";
 import login from "./routes/login/login";
 import acceesRoute from "./routes/accesToken";
 import logout from "./routes/logout"
+import userChecks from "./routes/userChecks";
 
 const app = express()
 
@@ -57,6 +58,9 @@ app.use("/", acceesRoute)
 
 app.use("/localUser/", localUserRoute)
 app.use("/visitingUser/", visitinUserRoute)
+
+//!PRUEBA PARA VALIDAR EXISTENCIA DE NOMBRE DE USUARIO
+app.use("/check", userChecks)
 
 //!PUREBA
 app.use('/admin', localCitizensRoutes)
