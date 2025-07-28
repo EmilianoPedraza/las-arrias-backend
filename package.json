@@ -24,9 +24,10 @@
     "jsonwebtoken": "9.0.2",
     "minimist": "1.2.8",
     "mongoose": "8.9.5",
+    "redis": "5.6.1",
+    "response-time": "^2.3.4",
     "socket.io": "4.8.1",
-    "typescript": "5.8.3",
-    "response-time": "^2.3.4"
+    "typescript": "5.8.3"
   },
   "devDependencies": {
     "@types/bcrypt": "5.0.2",
