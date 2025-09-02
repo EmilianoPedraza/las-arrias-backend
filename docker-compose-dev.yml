@@ -13,14 +13,15 @@ services:
       - "8080:8080"
     links:
       - las_arrias_mongo_service_dev
+
   las_arrias_mongo_service_dev:
     image: mongo
     container_name: las_arrias_mongo_container_dev
     ports:
       - "27017:27017"
-    entrypoint: 
-      - MONGO_INITDB_ROOT_USERNAME=nico
-      - MONGO_INITDB_ROOT_PASSWORD=password
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: nico
+      MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
       - mongo-data:/data/db
 
