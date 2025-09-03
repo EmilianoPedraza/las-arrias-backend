@@ -5,15 +5,19 @@ services:
       context: .
       dockerfile: dockerfile.dev
     container_name: api_las_arrias_container_dev
-    volumes:
-      - .:/api_las_arrias_dev
-      - /api/node_modules
     command: npm run dev
+    develop:
+      watch:
+        - action: rebuild
+          path: ./
+          target: ./
+          ignore:
+            - node_modules/
+            - dist/
     ports:
       - "8080:8080"
     links:
       - las_arrias_mongo_service_dev
-
   las_arrias_mongo_service_dev:
     image: mongo
     container_name: las_arrias_mongo_container_dev
@@ -23,7 +27,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: nico
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - mongo-data:/data/db
+      - mongo-data-dev:/data/db
 
 volumes:
-  mongo-data:
+  mongo-data-dev:
