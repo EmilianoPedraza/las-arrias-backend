@@ -3,8 +3,5 @@
 # dependencies
 /node_modules
 #notas
-/configuracion de typescript.txt
-/dependenciasNecesarias.txt
-/explicacionVariables.txt
 /dist
 /.env

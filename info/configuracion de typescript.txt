@@ -1,0 +1,47 @@
+
+CONFIGURACIÓN DE TYPESCRITP============================================================================
+-solo si tenemos instalado de forma global "typescript -g" 
+
+-Usar tsc -init para generar automáticamente la 
+configuración con el archivo incluido y luego realizar modificaciones a las mismas
+
+
+
+
+
+
+-MANUALMENTE:
+-se crea el archivo tsconfig.json
+-Dentro del Archivo se establecen las siguientes configuraciones:
+Sería lo basico, pero es problematico
+
+{
+    "compilerOptions": {
+        "module": "NodeNext", -->Indica que se utilizarán módulos de Node.js de la última versión
+
+        "moduleResolution": "nodenext", -->Especifica que se utilizará la resolución de módulos de Node.js
+                                          para encontrar los módulos importados.
+
+        "baseUrl": "App", -->la ruta base para resolver los módulos. Esto significa que cuando importes un módulo,
+                             se buscará primero en la carpeta "App".
+
+        "outDir": "dist", --> Especifica la carpeta donde se colocarán los archivos JavaScript compilados. 
+                              Todos los archivos ".js" resultantes se ubicarán dentro de esta carpeta.
+
+        "sourceMap": true, --> Indica que se generarán archivos de mapa de origen. Estos archivos permiten mapear el
+                               código JavaScript generado de vuelta al código TypeScript original(útil para la depuración).
+
+        "noImplicitAny": true -->Activa una comprobación estricta de tipos. Esto significa que si una variable 
+                                 no tiene un tipo explícito, TypeScript emitirá un error
+    },
+    "include": ["App/**/*"] -->Especifica que se incluirán todos los archivos TypeScript dentro de la carpeta 
+                                "App" y sus subcarpetas en el proceso de compilación
+}
+
+
+
+
+
+
+
+

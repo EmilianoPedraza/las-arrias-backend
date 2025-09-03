@@ -1,0 +1,29 @@
+CONFIGURACIÓN DE PROYECTO PARA DESARROLLO===============================================
+
+  "devDependencies": {
+     @types/express": "^5.0.0",
+    "nodemon": "^3.1.9",
+    "concurrently": "^9.1.2",
+  }
+
+-Instalar con npm i typescript -g (global) o verificar que esté instalado
+
+LOGICA PARA ESCUCHAR CAMBIOS Y CONFIGURACIÓN DE PAKAGE JSON======================================================
+
+
+*Mediante comando nodemon <directorio archivo js>=> escucharemos los cambios en el archivo dist/index.js.
+*Mediante comando tsc -w=>  escucharemos los cambios realizados en el archivo app/index.ts.
+
+Usaremos concurrently que permite ejecutar dos comandos a la vez, para no estár usando dos consolas y utilizar un solo comando para escuchar los
+cambios tanto de index.ts como de intex.js
+
+SCRIPTS EN PAKAGE JSON-----------------------------------------------------------
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc",
+    "start": "node dist/index.js",
+    "dev": " concurrently \"tsc -w\" \"nodemon dist/index.js\""
+  },
+
+
