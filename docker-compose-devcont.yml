@@ -7,14 +7,14 @@ services:
     container_name: api_las_arrias_container_devcont
     volumes:
       - .:/api_las_arrias_devcont
-      - /api/node_modules
+      - /api_las_arrias_devcont/node_modules
     command: npm run dev
     ports:
       - "8080:8080"
     links:
       - las_arrias_mongo_service_devcont
 
-  las_arrias_mongo_service_dev:
+  las_arrias_mongo_service_devcont:
     image: mongo
     container_name: las_arrias_mongo_container_devcont
     ports:
