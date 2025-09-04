@@ -3,10 +3,10 @@ FROM node:22.18.0-alpine
 
 RUN adduser -D -u 1001 userdev
 
-WORKDIR /api_las_arrias
+WORKDIR /api_las_arrias_devcontainer
 
-# Dar permisos al nuevo usuario sobre /api_las_arrias
-RUN chown -R userdev:userdev /api_las_arrias
+# Dar permisos al nuevo usuario sobre /api_las_arrias_devcontainer
+RUN chown -R userdev:userdev /api_las_arrias_devcontainer
 
 
 # Copiamos solo los archivos que describen las dependencias.

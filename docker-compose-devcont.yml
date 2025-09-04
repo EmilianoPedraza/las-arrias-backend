@@ -1,29 +1,32 @@
 version: '3.9'
 services:
-  api_las_arrias_service_devcont:
+  api_las_arrias_devcont_service:
     build:
       context: .
-      dockerfile: dockerfile.dev
-    container_name: api_las_arrias_container_devcont
+      dockerfile: dockerfile.devcont
+    container_name: api_las_arrias_devcontainer
     volumes:
-      - .:/api_las_arrias_devcont
-      - /api_las_arrias_devcont/node_modules
+      - .:/api_las_arrias_devcontainer
+      - /api_las_arrias_devcontainer/node_modules
     command: npm run dev
     ports:
-      - "8080:8080"
+      - "8080:2213"
     links:
-      - las_arrias_mongo_service_devcont
+      - las_arrias_mongo_service_dev
 
-  las_arrias_mongo_service_devcont:
+
+
+
+  las_arrias_mongo_service_dev:
     image: mongo
-    container_name: las_arrias_mongo_container_devcont
+    container_name: las_arrias_mongo_dev_container
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: nico
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - mongo-data-devcont:/data/db
+      - mongo-data-dev:/data/db
 
 volumes:
-  mongo-data-devcont:
+  mongo-data-dev:

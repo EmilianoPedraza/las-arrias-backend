@@ -1,46 +1,32 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
-
 {
 	//Establecer el nombre del devcontainer
-	"name": "docker-compose-devcontainer",
-
-	"dockerComposeFile":[
+	"name": "las-arrias-devcontainer",
+	"dockerComposeFile": [
 		"../docker-compose-devcont.yml"
 	],
 	//* Servicio principal que quiere que actúe como "devcontainer"
-    "service": "api_las_arrias_service_devcont", // el nombre de su servicio en docker-compose
-
-    //*Opcional: path en el contenedor donde estará montado el workspace
-	"workspaceFolder": "/api_las_arrias",
-   
-
-   "mounts": [
- 		 "source=${localWorkspaceFolder},target=/api_las_arrias,type=bind"
-    ],
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-     //“cuando el contenedor exponga un puerto, quiero que VS Code me lo reenvíe automáticamente a mi máquina host para poder accederlo desde el navegador o herramientas locales
-	"forwardPorts": [8080],
-
-	// Uncomment the next line to run commands after the container is created.
-	// "postCreateCommand": "cat /etc/os-release",
-
+	"service": "api_las_arrias_devcont_service", // el nombre de su servicio en docker-compose 
+	//*Opcional: path en el contenedor donde estará montado el workspace
+	"workspaceFolder": "/api_las_arrias_devcontainer",
+	"mounts": [
+		"source=${localWorkspaceFolder},target=/api_las_arrias_devcontainer,type=bind"
+	],
+	//“cuando el contenedor exponga un puerto, quiero que VS Code me lo reenvíe automáticamente a mi máquina host para poder accederlo desde el navegador o herramientas locales
+	"forwardPorts": [
+		8080
+	],
 	// Configurar propiedades específicas de la herramienta.
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"vscode.json-language-features",//Caracteristicas de lenguaje JS y TS
-				"vscode.typescript-language-features",//Caracteristicas de lenguaje JSON
-				"vscode.emmet",//Emmet
+				"vscode.json-language-features", //Caracteristicas de lenguaje JS y TS
+				"vscode.typescript-language-features", //Caracteristicas de lenguaje JSON
+				"vscode.emmet", //Emmet
 				"vscode.npm", //npm
-				"aaron-bond.better-comments"//Para comentarios con colores
+				"aaron-bond.better-comments" //Para comentarios con colores
 			]
 		}
 	}
-
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "devcontainer"
 }

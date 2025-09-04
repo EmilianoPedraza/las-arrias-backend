@@ -1,7 +1,4 @@
-#para extension de visual 
 /.vscode
-# dependencies
 /node_modules
-#notas
 /dist
 /.env
