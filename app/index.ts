@@ -31,7 +31,7 @@ connectDb()
 loadEnvironmentVars()
 const { PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS } = environmentVars()
 
-// console.log('!!funciono correctamente!')
+console.log('!!funciono correctamente!!!')
 
 // Inicio del servidor en el puerto especificado
 const server = app.listen(PORT, () => {
@@ -68,6 +68,9 @@ app.use(cors({
 
 
 //?Rutas base para autenticación y sesión
+app.get("/prueba", (_, res) => {
+    res.json({ message: "La API está en línea y funcionando correctamente." })
+})
 app.use("/", logout)
 app.use("/", login)
 

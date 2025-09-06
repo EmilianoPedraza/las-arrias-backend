@@ -12,9 +12,7 @@
 		"source=${localWorkspaceFolder},target=/api_las_arrias_devcontainer,type=bind"
 	],
 	//“cuando el contenedor exponga un puerto, quiero que VS Code me lo reenvíe automáticamente a mi máquina host para poder accederlo desde el navegador o herramientas locales
-	"forwardPorts": [
-		8080
-	],
+	// "forwardPorts": [],
 	// Configurar propiedades específicas de la herramienta.
 	"customizations": {
 		"vscode": {
