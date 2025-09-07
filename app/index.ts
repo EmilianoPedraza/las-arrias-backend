@@ -31,8 +31,7 @@ connectDb()
 loadEnvironmentVars()
 const { PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS } = environmentVars()
 
-console.log('!!funciono correctamente!!!')
-
+console.log('!!funciono correctamente!243343!!')
 // Inicio del servidor en el puerto especificado
 const server = app.listen(PORT, () => {
     const port = server.address()
