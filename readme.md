@@ -1,6 +1,78 @@
 # Las Arrias API
 
-Las Arrias API es una API REST full, que parte como microservicio de Las Arrias web, siendo esta ultima una aplicacion web.
-Esta API Rest se encarga de validar usuarios a travez de tokens de verificacion y de guardar datos con mongoDB
-, mongo Atlas y en memoria con Redis. El uso de Redis en este proyecto sirve para manejar mejor algunas de las validaciones
-que se ejecutan en tiempo real, como tambien datos de mensajeria entre usuarios registrados ya validados.
+La **Las Arrias API** es el servicio **backend central** que da soporte a la plataforma **Las Arrias Web**, una aplicación diseñada para conectar a la comunidad, facilitar proyectos, negocios locales, noticias y actividades.
+
+Esta API está construida bajo un enfoque **RESTful**, funcionando como núcleo lógico para la persistencia de datos y el procesamiento de los mismos realizando este trabajo de forma segura.  
+Su arquitectura puede describirse como un **monolito modular centralizado**, expuesto al frontend a través de un **BFF/API Gateway** en Next.js.
+
+---
+
+## Tecnologías principales
+- **Node.js + Express** → servidor backend.
+- **MongoDB (Atlas)** → base de datos principal para almacenamiento persistente.
+- **Mongoose** → modelado de datos con validaciones y esquemas.
+- **Redis** → almacenamiento en memoria para optimizar validaciones en tiempo real y mensajería.
+- **JWT (JSON Web Tokens)** → autenticación y autorización segura.
+- **TypeScript** → tipado fuerte y mantenibilidad del código.
+
+---
+
+## Funcionalidades principales
+- **Gestión de usuarios**
+  - Registro de nuevos usuarios con almacenamiento en Mongo Atlas.
+  - Login de usuarios con generación y envío de tokens de acceso.
+  - Validación y verificación de identidad mediante JWT.
+  - Protección de rutas con autenticación obligatoria.
+  - Verificación rápida de usuarios existentes usando Redis.
+
+- **Optimización en tiempo real**
+  - Uso de Redis para cachear validaciones críticas.
+  - Manejo de datos temporales y mensajería entre usuarios registrados.
+
+---
+
+## Características clave
+- **Backend centralizado**: concentra toda la lógica de negocio y persistencia de datos.
+- **Escalabilidad progresiva**: preparado para evolucionar hacia servicios más distribuidos si fuese necesario.
+- **Integración con BFF (Next.js)**: las solicitudes del frontend no se comunican directamente con la API, sino a través de un backend interno que actúa como **puerta de entrada y capa de seguridad**.
+- **Enfoque modular**: aunque monolítico, está organizado en módulos que permiten aislar responsabilidades (usuarios, validaciones, mensajería, etc.).
+
+---
+
+## Próximos pasos
+- Extender el manejo de mensajería con Redis a eventos en tiempo real (ej.: WebSockets).
+- Definir módulos adicionales para proyectos comunitarios, negocios y noticias.
+- Incorporar pruebas automatizadas y CI/CD para mejorar despliegues.
+
+---
+
+
+
+
+
+
+
+<!-- # Las Arrias API
+Se trata de una API REST full, que parte como servicio backend central de Las Arrias web, siendo esta ultima una aplicacion web.
+Esta API Rest se encarga de validar usuarios a travez de tokens de verificacion y de guardar datos de los mismos con mongoDB
+especificamente con mongo Atlas, y, en memoria con Redis de ser necesario, para mejorar el flujo de datos. El uso de Redis en este proyecto sirve para manejar mejor algunas de las validaciones que se ejecutan en tiempo real, como tambien datos de mensajeria entre usuarios registrados.
+
+
+## Servicios que provee la API
+- Validacion de usuarios mediante JSW tokens para accesos.
+- Verificacion de usuarios existentes mediante el uso de Redis.
+- Registro de usuarios amacenando datos en cluster mongo atlas.
+- Autentificacion de usuarios para las peticiones a rutas protegidas.
+- Login de usuarios con envio de tokens de acceso incluido.
+- Identi
+
+
+### Colecciones en la base de datos
+- Administrators
+- LocalCitizens
+- users
+#### Roles en Users
+- VisitingUser
+- LocalUser
+#### Roles en Administrators
+- GeneralManager -->
