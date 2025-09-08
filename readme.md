@@ -8,17 +8,21 @@ Su arquitectura puede describirse como un **monolito modular centralizado**, exp
 ---
 
 ## Tecnologías principales
+
 - **Node.js + Express** → servidor backend.
 - **MongoDB (Atlas)** → base de datos principal para almacenamiento persistente.
 - **Mongoose** → modelado de datos con validaciones y esquemas.
 - **Redis** → almacenamiento en memoria para optimizar validaciones en tiempo real y mensajería.
 - **JWT (JSON Web Tokens)** → autenticación y autorización segura.
 - **TypeScript** → tipado fuerte y mantenibilidad del código.
+- **Docker + Devcontainer** → entornos de desarrollo aislados, con dependencias consistentes y configuraciones listas para iniciar el proyecto de forma inmediata.
 
 ---
 
 ## Funcionalidades principales
+
 - **Gestión de usuarios**
+
   - Registro de nuevos usuarios con almacenamiento en Mongo Atlas.
   - Login de usuarios con generación y envío de tokens de acceso.
   - Validación y verificación de identidad mediante JWT.
@@ -32,6 +36,7 @@ Su arquitectura puede describirse como un **monolito modular centralizado**, exp
 ---
 
 ## Características clave
+
 - **Backend centralizado**: concentra toda la lógica de negocio y persistencia de datos.
 - **Escalabilidad progresiva**: preparado para evolucionar hacia servicios más distribuidos si fuese necesario.
 - **Integración con BFF (Next.js)**: las solicitudes del frontend no se comunican directamente con la API, sino a través de un backend interno que actúa como **puerta de entrada y capa de seguridad**.
@@ -40,17 +45,12 @@ Su arquitectura puede describirse como un **monolito modular centralizado**, exp
 ---
 
 ## Próximos pasos
+
 - Extender el manejo de mensajería con Redis a eventos en tiempo real (ej.: WebSockets).
 - Definir módulos adicionales para proyectos comunitarios, negocios y noticias.
 - Incorporar pruebas automatizadas y CI/CD para mejorar despliegues.
 
 ---
-
-
-
-
-
-
 
 <!-- # Las Arrias API
 Se trata de una API REST full, que parte como servicio backend central de Las Arrias web, siendo esta ultima una aplicacion web.
