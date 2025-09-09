@@ -3,7 +3,38 @@
 ## Entorno de Desarrollo con Contenedores
 
 El entorno de desarrollo se configura a partir del archivo **`docker-compose-devcont.yml`**, el cual sirve como base para levantar el contenedor dentro de **Devcontainer**.
-Sin embargo, también existe la alternativa de trabajar **fuera del entorno Devcontainer**, creando directamente el contenedor con el comando de `docker compose` apuntando al archivo **`docker-compose-dev.yml`**.
+Sin embargo, también existe la alternativa de trabajar **fuera del entorno Devcontainer**, creando directamente el contenedor con el comando de `docker compose` apuntando al archivo **`docker-compose-dev.yml`** el cual es un contendor configurado para monitorear aquellos cambios que se
+realicen en el host y aplicar dichos cambios de forma automatica en el contenedor, y , que tambien permanece escuchando peticiones.
+
+### Dockerfile como base de contenedores de desarrollo
+
+## Dockerfile como base de contenedores de desarrollo
+
+Todos los contenedores de desarrollo utilizan configuraciones con Docker Compose que comparten el mismo cimiento base: **`Dockerfile.dev`**.  
+Este archivo define la imagen que sirve como punto de partida para los entornos de desarrollo.
+
+A continuación se muestra su contenido simplificado y explicado en detalle:
+
+```dockerfile
+# Usamos la sintaxis moderna de Dockerfile
+# y definimos la imagen base
+# syntax=docker/dockerfile:1
+FROM node:22.18.0-alpine
+# Creamos un usuario de desarrollo no-root
+RUN adduser -D -u 1001 userdev
+# Definimos el directorio de trabajo
+WORKDIR /api_las_arrias_devcontainer
+# Ajustamos permisos para el usuario sobre el directorio
+RUN chown -R userdev:userdev /api_las_arrias_devcontainer
+# Copiamos solo archivos de dependencias
+COPY --chown=userdev:userdev package.json package-lock.json ./
+# Establecemos el usuario no-root para el resto de operaciones
+USER userdev
+# Instalamos dependencias con npm ci (basado en package-lock.json)
+RUN npm ci
+# Copiamos el resto del código del proyecto
+COPY --chown=userdev:userdev . .
+```
 
 ### Persistencia de Datos
 

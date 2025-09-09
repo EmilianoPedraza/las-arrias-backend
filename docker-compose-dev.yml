@@ -3,7 +3,7 @@ services:
   api_las_arrias_service_dev:
     build:
       context: .
-      dockerfile: dockerfile.devcont
+      dockerfile: dockerfile.dev
     container_name: api_las_arrias_container_dev
     command: npm run dev
     develop:
