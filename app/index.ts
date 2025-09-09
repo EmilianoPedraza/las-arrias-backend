@@ -67,7 +67,7 @@ app.use(cors({
 
 //?Rutas base para autenticación y sesión
 app.get("/prueba", (_, res) => {
-    res.json({ message: "La API está en línea y funcionando correctamente." })
+    res.json({ message: "La API! está en línea y funcionando correctamente." })
 })
 app.use("/", logout)
 app.use("/", login)
