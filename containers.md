@@ -99,14 +99,14 @@ Esta configuración cumple dos objetivos principales:
    ```
 Este comando utiliza ts-node-dev, que hace un build en memoria y mantiene la aplicación en modo escucha, aplicando los cambios automáticamente al modificar el código.
 
-### Ventajas de esta estrategia:
-- #### Ejecución manual sin conflictos
+### Ventajas de esta estrategia 👨🏻‍💻:
+- #### Ejecución manual sin conflictos 
   Desde la terminal del entorno, puede iniciar el backend en cualquier momento con:
   ```
   npm run dev
   ```
 
--  #### Depuración sin interrupciones
+-  #### Depuración sin interrupciones 
 Es posible acceder al contenedor y abrir una sesión interactiva para inspección o debugging con:
 ```
 docker exec -it api_las_arrias_devcontainer sh
