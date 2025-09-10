@@ -1,6 +1,6 @@
 # Las Arrias API
 
-La **Las Arrias API** es el servicio **backend central** que da soporte a la plataforma **Las Arrias Web**, una aplicación diseñada para conectar a la comunidad, facilitar proyectos, negocios locales, noticias y actividades.
+**Las Arrias API** es el servicio **backend central** que da soporte a la plataforma **Las Arrias Web**, una aplicación diseñada para conectar a la comunidad, facilitar proyectos, negocios locales, noticias y actividades.
 
 Esta API está construida bajo un enfoque **RESTful**, funcionando como núcleo lógico para la persistencia de datos y el procesamiento de los mismos realizando este trabajo de forma segura.  
 Su arquitectura puede describirse como un **monolito modular centralizado**, expuesto al frontend a través de un **BFF/API Gateway** en Next.js.
