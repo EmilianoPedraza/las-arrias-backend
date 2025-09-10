@@ -99,9 +99,11 @@ Esta configuración cumple dos objetivos principales:
    ```
    Este comando utiliza ts-node-dev, lo que permite hacer un build en memoria y mantener la aplicación en modo escucha, aplicando cambios automáticamente cada vez que se modifica el código.
 #### Gracias a esta estrategia:
-Se pueden ejecutar procesos manualmente dentro de la terminal del entorno, sin que entren en conflicto con la configuración inicial del contenedor.
+- Se pueden ejecutar procesos manualmente dentro de la terminal del entorno
+con **npm run devcont**,  sin que entren en conflicto con la configuración inicial del contenedor.
+- Se puede acceder al contenedor con **docker exec -it api_las_arrias_devcontainer sh** sin interrupciones.
 
-**En resumen, el uso de sleep infinity garantiza flexibilidad: el contenedor se mantiene vivo, pero el control sobre la ejecución del backend y la depuración queda en manos del desarrollador.**
+En resumen, el uso de sleep infinity garantiza flexibilidad: el contenedor se mantiene vivo, pero el control sobre la ejecución del backend y la depuración queda en manos del desarrollador.
 
 ## Gestión de logs y debugging con Docker Compose directo
 
