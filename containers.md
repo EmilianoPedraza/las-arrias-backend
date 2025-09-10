@@ -8,8 +8,6 @@ realicen en el host y aplicar dichos cambios de forma automatica en el contenedo
 
 ### Dockerfile como base de contenedores de desarrollo
 
-## Dockerfile como base de contenedores de desarrollo
-
 Todos los contenedores de desarrollo utilizan configuraciones con Docker Compose que comparten el mismo cimiento base: **`Dockerfile.dev`**.  
 Este archivo define la imagen que sirve como punto de partida para los entornos de desarrollo.
 
@@ -36,7 +34,7 @@ RUN npm ci
 COPY --chown=userdev:userdev . .
 ```
 
-### Persistencia de Datos
+## Persistencia de Datos
 
 Tanto el contenedor definido en **`devcontainer.json`** (que usa `docker-compose-devcont.yml`) como el contenedor definido en **`docker-compose-dev.yml`** crean internamente una imagen de **MongoDB** que:
 
@@ -56,12 +54,14 @@ De esta forma, las pruebas de **persistencia de datos** no se pierden al alterna
   - Servicio: `api_las_arrias_devcont_service`
   - Contenedor: `api_las_arrias_devcontainer`
   - Puerto: `8080:2213`
-
+  
 - **MongoDB**
   - Servicio: `las_arrias_mongo_service_dev`
   - Contenedor: `las_arrias_mongo_dev_container`
   - Puerto: `27017:27017`
   - Volumen: `lasarriasback_mongo-data-dev`
+  - Password: `password`
+  - User: `nico`
 
 ---
 
@@ -78,8 +78,36 @@ De esta forma, las pruebas de **persistencia de datos** no se pierden al alterna
   - Contenedor: `las_arrias_mongo_dev_container`
   - Puerto: `27017:27017`
   - Volumen: `lasarriasback_mongo-data-dev`
+  - Password: `password`
+  - User: `nico`
 
 ---
+
+
+
+## Gestión de logs y debugging en entorno devcontainer
+El contenedor utilizado por Devcontainer se mantiene en ejecución gracias a la instrucción **command: sleep infinity** definida en el archivo **docker-compose-devcont.yml**.
+Esta configuración cumple dos objetivos principales:
+- 1. ##### Mantener el contenedor activo
+   - - El contenedor no finaliza inmediatamente después de levantarse, sino que  permanece en ejecución de forma indefinida.
+   - - Esto permite al desarrollador conectarse al entorno y ejecutar manualmente los comandos necesarios, como levantar el backend.
+- 2. #### Evitar conflictos de puertos
+   - - Si el contenedor se iniciara directamente con **command: npm run devcont**, podrían aparecer conflictos en el uso de puertos, ya que ese proceso quedaría asociado al arranque del contenedor.
+   - - Con esta configuración, el backend se ejecuta manualmente desde dentro del entorno con:
+   ```
+    npm run devcont 
+   ```
+   Este comando utiliza ts-node-dev, lo que permite hacer un build en memoria y mantener la aplicación en modo escucha, aplicando cambios automáticamente cada vez que se modifica el código.
+#### Gracias a esta estrategia:
+Se pueden ejecutar procesos manualmente dentro de la terminal del entorno, sin que entren en conflicto con la configuración inicial del contenedor.
+
+**En resumen, el uso de sleep infinity garantiza flexibilidad: el contenedor se mantiene vivo, pero el control sobre la ejecución del backend y la depuración queda en manos del desarrollador.**
+
+## Gestión de logs y debugging con Docker Compose directo
+
+
+
+
 
 ## Consideraciones Importantes ⚠️
 
@@ -90,4 +118,5 @@ Al cambiar entre los diferentes entornos de desarrollo:
   - `api_las_arrias_devcontainer` (si está usando Devcontainer).
   - `api_las_arrias_container_dev` (si está usando Docker Compose directo).
 
-Esto es necesario porque ambos mapean el mismo puerto y utilizan **bind mounts** con volúmenes anónimos, lo que generaría conflictos si ambos están en ejecución simultáneamente.
+Esto es necesario porque ambos mapean el mismo puerto, lo que generaría conflictos si ambos están en ejecución simultáneamente.
+
