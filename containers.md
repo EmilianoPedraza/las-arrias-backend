@@ -85,7 +85,7 @@ De esta forma, las pruebas de **persistencia de datos** no se pierden al alterna
 
 
 
-## Gestión de logs y debugging en entorno devcontainer
+## Gestión de logs y debugging en entorno devcontainer 
 El contenedor utilizado por Devcontainer se mantiene en ejecución gracias a la instrucción **command: sleep infinity** definida en el archivo **docker-compose-devcont.yml**.
 Esta configuración cumple dos objetivos principales:
 - 1. ##### Mantener el contenedor activo
@@ -99,7 +99,7 @@ Esta configuración cumple dos objetivos principales:
    ```
 Este comando utiliza ts-node-dev, que hace un build en memoria y mantiene la aplicación en modo escucha, aplicando los cambios automáticamente al modificar el código.
 
-### Ventajas de esta estrategia 👨🏻‍💻:
+### 👨🏻‍💻Ventajas de esta estrategia:
 - #### Ejecución manual sin conflictos 
   Desde la terminal del entorno, puede iniciar el backend en cualquier momento con:
   ```
@@ -107,10 +107,10 @@ Este comando utiliza ts-node-dev, que hace un build en memoria y mantiene la apl
   ```
 
 -  #### Depuración sin interrupciones 
-Es posible acceder al contenedor y abrir una sesión interactiva para inspección o debugging con:
-```
-docker exec -it api_las_arrias_devcontainer sh
-```
+  Es posible acceder al contenedor y abrir una sesión interactiva para inspección o debugging con:
+  ```
+  docker exec -it api_las_arrias_devcontainer sh
+  ```
 
 En resumen, el uso de **sleep infinity** garantiza flexibilidad: el contenedor se mantiene vivo, pero el control sobre la ejecución del backend y la depuración queda en manos del desarrollador.
 
