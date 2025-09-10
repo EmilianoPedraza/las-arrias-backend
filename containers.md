@@ -89,11 +89,11 @@ De esta forma, las pruebas de **persistencia de datos** no se pierden al alterna
 El contenedor utilizado por Devcontainer se mantiene en ejecución gracias a la instrucción **command: sleep infinity** definida en el archivo **docker-compose-devcont.yml**.
 Esta configuración cumple dos objetivos principales:
 - 1. ##### Mantener el contenedor activo
-   - - El contenedor no finaliza inmediatamente después de levantarse, sino que  permanece en ejecución de forma indefinida.
-   - - Esto permite al desarrollador conectarse al entorno y ejecutar manualmente los comandos necesarios, como levantar el backend.
+    - El contenedor no finaliza inmediatamente después de levantarse, sino que  permanece en ejecución de forma indefinida.
+    - Esto permite al desarrollador conectarse al entorno y ejecutar manualmente los comandos necesarios, como levantar el backend.
 - 2. #### Evitar conflictos de puertos
-   - - Si el contenedor se iniciara directamente con **command: npm run devcont**, podrían aparecer conflictos en el uso de puertos, ya que ese proceso quedaría asociado al arranque del contenedor.
-   - - Con esta configuración, el backend se ejecuta manualmente desde dentro del entorno con:
+    - Si el contenedor se iniciara directamente con **command: npm run devcont**, podrían aparecer conflictos en el uso de puertos, ya que ese proceso quedaría asociado al arranque del contenedor.
+    - Con esta configuración, el backend se ejecuta manualmente desde dentro del entorno con:
    ```
     npm run devcont 
    ```
