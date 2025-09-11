@@ -54,7 +54,7 @@ De esta forma, las pruebas de **persistencia de datos** no se pierden al alterna
   - Servicio: `api_las_arrias_devcont_service`
   - Contenedor: `api_las_arrias_devcontainer`
   - Puerto: `8080:2213`
-  
+
 - **MongoDB**
   - Servicio: `las_arrias_mongo_service_dev`
   - Contenedor: `las_arrias_mongo_dev_container`
@@ -83,45 +83,42 @@ De esta forma, las pruebas de **persistencia de datos** no se pierden al alterna
 
 ---
 
+## Gestión de logs y debugging en entorno devcontainer
 
-
-## Gestión de logs y debugging en entorno devcontainer 
 El contenedor utilizado por Devcontainer se mantiene en ejecución gracias a la instrucción **command: sleep infinity** definida en el archivo **docker-compose-devcont.yml**.
 Esta configuración cumple dos objetivos principales:
+
 - 1. ##### Mantener el contenedor activo
-    - El contenedor no finaliza inmediatamente después de levantarse, sino que  permanece en ejecución de forma indefinida.
-    - Esto permite al desarrollador conectarse al entorno y ejecutar manualmente los comandos necesarios, como levantar el backend.
-- 2. #### Evitar conflictos de puertos
-    - Si el contenedor se iniciara directamente con **command: npm run devcont**, podrían aparecer conflictos en el uso de puertos, ya que ese proceso quedaría asociado al arranque del contenedor.
-    - Con la estrategia de **sleep infinity**, el backend se ejecuta de forma controlada dentro del entorno con:
-   ```
-    npm run devcont 
-   ```
-Este comando utiliza ts-node-dev, que hace un build en memoria y mantiene la aplicación en modo escucha, aplicando los cambios automáticamente al modificar el código.
+  - El contenedor no finaliza inmediatamente después de levantarse, sino que permanece en ejecución de forma indefinida.
+  - Esto permite al desarrollador conectarse al entorno y ejecutar manualmente los comandos necesarios, como levantar el backend.
+- 2.  #### Evitar conflictos de puertos
+          - Si el contenedor se iniciara directamente con **command: npm run devcont**, podrían aparecer conflictos en el uso de puertos, ya que ese proceso quedaría asociado al arranque del contenedor.
+          - Con la estrategia de **sleep infinity**, el backend se ejecuta de forma controlada dentro del entorno con:
+      ```
+       npm run devcont
+      ```
+      Este comando utiliza ts-node-dev, que hace un build en memoria y mantiene la aplicación en modo escucha, aplicando los cambios automáticamente al modificar el código.
 
 ### 👨🏻‍💻Ventajas de esta estrategia:
-- #### Ejecución manual sin conflictos 
+
+- #### Ejecución manual sin conflictos
+
   Desde la terminal del entorno, puede iniciar el backend en cualquier momento con:
+
   ```
   npm run dev
   ```
 
--  #### Depuración sin interrupciones 
+- #### Depuración sin interrupciones
   Es posible acceder al contenedor y abrir una sesión interactiva para inspección o debugging con:
-  ```
-  docker exec -it api_las_arrias_devcontainer sh
-  ```
+
+```
+docker exec -it api_las_arrias_devcontainer sh
+```
 
 En resumen, el uso de **sleep infinity** garantiza flexibilidad: el contenedor se mantiene vivo, pero el control sobre la ejecución del backend y la depuración queda en manos del desarrollador.
 
-
-
-
 ## Gestión de logs y debugging con Docker Compose directo
-
-
-
-
 
 ## Consideraciones Importantes ⚠️
 
@@ -133,4 +130,3 @@ Al cambiar entre los diferentes entornos de desarrollo:
   - `api_las_arrias_container_dev` (si está usando Docker Compose directo).
 
 Esto es necesario porque ambos mapean el mismo puerto, lo que generaría conflictos si ambos están en ejecución simultáneamente.
-
