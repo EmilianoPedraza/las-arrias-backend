@@ -15,8 +15,6 @@ services:
       - las_arrias_mongo_service_dev
 
 
-
-
   las_arrias_mongo_service_dev:
     image: mongo
     container_name: las_arrias_mongo_dev_container
@@ -27,6 +25,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
       - mongo-data-dev:/data/db
+  las_arrias_redis_service_dev:
+    image: redis
+    container_name: las_arrias_redis_dev_container
+    ports:
+      - "6379:6379"
 
 volumes:
   mongo-data-dev:

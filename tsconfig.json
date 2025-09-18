@@ -107,5 +107,5 @@
     /* Integridad */
     "skipDefaultLibCheck": true,                      /* Omite la verificación de tipos en archivos .d.ts incluidos. */
     "skipLibCheck": true                                 /* Omite la verificación de tipos en todos los archivos .d.ts. */
-  }
+  },"include": ["app"]
 }
