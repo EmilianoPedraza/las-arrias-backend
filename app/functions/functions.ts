@@ -1,3 +1,5 @@
+import validator from "validator";
+
 type Tipo = string | number | boolean | object | undefined | null;
 type TipoValido = 'string' | 'number' | 'boolean' | 'object' | 'undefined' | 'null';
 
@@ -27,6 +29,18 @@ const validarNumEntero = (num: number): boolean => {
     return false
 }
 
-export { validType, validarNumEntero, validarStringConExpresion };
+
+const validateEmail = (email: string): boolean => {
+    const options = {
+        allow_display_name: false, // "John Doe <john@example.com>"
+        require_display_name: false,
+        allow_utf8_local_part: false, // desactiva caracteres "raros" en la parte local
+        require_tld: true,           // exige TLD (.com, .net, etc.)
+        ignore_max_length: false     // respeta 254 chars total / 64 local
+    };
+    return validator.isEmail(email, options)
+}
+
+export { validType, validarNumEntero, validarStringConExpresion, validateEmail };
 
 

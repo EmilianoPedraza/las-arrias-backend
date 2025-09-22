@@ -20,7 +20,9 @@ import acceesRoute from "./routes/accesToken";
 import logout from "./routes/logout"
 import userChecks from "./routes/userChecks";
 
-
+//!
+import test from "./testing/mookUsersRoute";
+//!
 
 const app = express()
 //middleware para saber el tiempo de respuesta
@@ -87,3 +89,8 @@ app.use('/admin', adminUserRoute)
 
 // Rutas para operaciones de administración y validación de ciudadanos locales //!(en etapa de pruebas y en desarrollo aún)
 app.use('/admin', localCitizensRoutes)
+
+
+//!
+app.use('/test', test)
+//!

@@ -92,9 +92,6 @@ export default class localUser extends User {
         //Se guarda el documento.
         await this.guardarNuevoLocalUser()
     }
-
-
-
     //?LOGIN DE USUARIO
     static async loginLocalUser(nombreUser: string, password: string): Promise<ClientLocalUserType> {
         User.validarNombreUsuario(nombreUser)//valida el nombre de usuario, si no cumple con el formato de string genera error badrequest
