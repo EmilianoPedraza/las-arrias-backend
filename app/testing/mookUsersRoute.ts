@@ -1,44 +1,48 @@
-import { Router } from "express";
+import { json, urlencoded, Router } from "express";
 import { Faker, es } from '@faker-js/faker';
 import { LocalUser } from "../models/usuario";
+import bcrypt from "bcrypt"//Para encriptar contraseñas
+//*para grear usuarios
+import localUser from "../controllers/user/localUser/localUser";
+import { UserError } from "../controllers/user/errors/userError";
 
-//route
+
+
+type LocalUserType = {
+    nombre: string,
+    apellido: string,
+    nombreUsuario: string,
+    email: string,
+    dni: number,
+    telefono?: number
+}
+
+
+//*route
 const testingRoute = Router();
+//* middlewares
+testingRoute.use(json())
+testingRoute.use(urlencoded({ extended: true }))
 
 const randomSeed = () => Math.floor(Math.random() * 100);
 
-const createFirstName = (): string => {
-    //configuracion de faker para español
-    const faker = new Faker({ locale: [es] });
-    faker.seed(randomSeed());
-    return faker.person.firstName();
-}
-const createLastName = (): string => {
-    const faker = new Faker({ locale: [es] });
-    faker.seed(randomSeed());
-    return faker.person.lastName();
-}
+const faker = new Faker({ locale: [es] });
+faker.seed(randomSeed());
+
+
+
 
 const createEmail = (): string => {
-    const faker = new Faker({ locale: [es] });
     let email
-    faker.seed(randomSeed());
     do {
         email = faker.internet.email();
     } while (/\.\@/.test(email)); // si hay ".@" → rechazar
     return email
 }
 const createPassword = () => {
-    const faker = new Faker({ locale: [es] });
-    faker.seed(randomSeed());
     return faker.internet.password({ length: 8, memorable: true, pattern: /[A-Za-z0-9!@#$%^&*()_+]{8,}/ });
 }
 
-const createDate = () => {
-    const faker = new Faker({ locale: [es] });
-    faker.seed(randomSeed())
-    return faker.date.past()
-}
 
 const insertRandomCharacter = (nombre: string, apellido: string) => {
     //si es true se genera el guion de ubicacion aleatoria
@@ -67,28 +71,30 @@ const insertRandomCharacter = (nombre: string, apellido: string) => {
     return newString.userName
 }
 
-type LocalUserType = {
-    nombre: string,
-    apellido: string,
-    nombreUsuario: string,
-    email: string,
-    dni: number,
-    telefono?: number
+
+const encripta = async (password: string) => {
+    try {
+        const newpass = await bcrypt.hash(password, 10)
+        return newpass
+    } catch (error) {
+        throw new Error('Error al encriptar');
+    }
 }
 
-export const createUser = () => {
+export const createUser = async (password: 'encript' | 'simple') => {
     const user = {
-        nombre: createFirstName(),
-        apellido: createLastName(),
+        nombre: faker.person.firstName(),
+        apellido: faker.person.lastName(),
         email: createEmail(),
         password: createPassword(),
-        creadoEn: createDate(),
-        actualizadoEn: createDate(),
-        dni: Math.floor(999999 + Math.random() * 99999999),
+        creadoEn: faker.date.past(),
+        actualizadoEn: faker.date.past(),
+        dni: Math.floor(999999 + Math.random() * 9999999),
         nombreUsuario: '',
     }
     const newUserName = insertRandomCharacter(user.nombre, user.apellido)
     user['nombreUsuario'] = newUserName
+    password === 'encript' && (user.password = await encripta(user.password))
     return user
 }
 
@@ -96,30 +102,88 @@ export const createUser = () => {
 
 interface LocalUsers extends Array<LocalUserType> { }
 
-const createMultipleUsers = (cant: number): LocalUsers => {
+const createMultipleUsers = async (cant: number): Promise<LocalUsers> => {
     const users = [] as LocalUsers
     for (let i = 0; i < cant; i++) {
-        users.push(createUser())
+        users.push(await createUser('encript'))
     }
     return users
 }
 
 
 
-testingRoute.get('/register', async (req, res) => {
-    //
+
+
+testingRoute.get('/register', (req, res) => {
+    const typeReg = typeof req.query.type === "string" ? req.query.type : undefined;
     const cant = typeof req.query.cant === "string" ? req.query.cant : undefined;
-    if (!(isNaN(Number(cant)))) {
-        const cant_: number = parseInt(cant as string)
-        const newUsers = createMultipleUsers(cant_)
-        await LocalUser.insertMany(newUsers)
-        console.log(newUsers)
-        res.status(200).json({
-            users: newUsers
-        })
+    if (!typeReg || !cant) {
+        res.status(400).json({ ok: false, message: 'Existen parametros indefinidos' });
+        return
     }
-    res.status(400).json({
-        ok: false
-    })
+    if (isNaN(Number(cant))) {
+        res.status(400).json({ ok: false, message: 'La cantidad especificada no corresponde a un valor numerico' });
+        return
+    }
+    if (typeReg === 'secuential') {
+        res.redirect(`/test/secuential?cant=${cant}`)
+        return
+    }
+    if (typeReg === 'many') {
+        res.redirect(`/test/many?cant=${cant}`)
+        return
+    }
+    res.status(400).json({ ok: false, message: 'La opcion de creacion de users no se reconoce' });
 })
+
+
+
+//Agregar varios usuarios
+testingRoute.get('/many', async (req, res) => {
+    try {
+        const cant = typeof req.query.cant === "string" ? req.query.cant : undefined;
+        if (!cant || isNaN(Number(cant))) {
+            return res.status(400).json({ ok: false });
+        }
+
+        const cant_ = parseInt(cant as string);
+        const newUsers = await createMultipleUsers(cant_);
+        await LocalUser.insertMany(newUsers);
+
+        return res.status(200).json({ users: newUsers });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json({ ok: false });
+    }
+});
+
+
+interface UsersErrors extends Array<{ nombreUsuario: string, error: string }> { }
+interface UsuariosSave extends Array<{ nombreUsuario: string, nombre: string, password: string }> { }
+testingRoute.get('/secuential', async (req, res) => {
+    const usersErrors: UsersErrors = []
+    const usuariosSave: UsuariosSave = []
+
+    const cant = parseInt(req.query.cant as string)
+    for (let i = 0; i <= cant; i++) {
+        const user = await createUser('simple')
+        const { nombre, apellido, dni, nombreUsuario, email, password } = user
+        const userReg = new localUser(dni, undefined, nombre, apellido, nombreUsuario, email, password)
+        let ok = true
+        try {
+            await userReg.validateRegisterUser()
+            await userReg.validateLocalUser()
+            await userReg.guardarNuevoLocalUser()
+            await userReg.encriptarPsw()
+        } catch (er) {
+            er instanceof UserError && (usersErrors.push({ nombreUsuario, error: er.message }))
+            ok = false
+        }
+        ok && (usuariosSave.push({ nombre, nombreUsuario, password }))
+    }
+    res.status(200).json({ usersOk: usuariosSave, usersNot: usersErrors, totalErrors: usersErrors.length, totalRegisters: usuariosSave.length })
+})
+
+
 export default testingRoute

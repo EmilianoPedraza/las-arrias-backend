@@ -6,7 +6,9 @@ export const isDev = minimist(process.argv.slice(2)).mode === "dev"
 
 import path from "path";
 
-const ruta = path.resolve(__filename, "../../../.env")
+const rutaType = isDev ? 'dev.env' : '.env'
+const ruta = path.resolve(__filename, `../../../${rutaType}`)
+
 
 /**
  * Carga las variables de entorno desde un archivo .env utilizando dotenv,
@@ -39,7 +41,7 @@ export const loadEnvironmentVars = () => {
  * - SECRET_LOG_ACCES_USER_TOKEN:
  */
 export const environmentVars = () => {
-    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO_COMPAS_DB_LA, PORT, ORIGINS_PROD, ORIGINS_DEV, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER } = process.env
+    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO, PORT, ORIGINS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER } = process.env
 
     const ALLOWEDHEADERS = [
         'Content-Type',
@@ -48,16 +50,16 @@ export const environmentVars = () => {
         'Accept',
         'Origin']
     const METHODS = ['GET', 'POST', 'PUT', 'DELETE']
-    const ORIGINS = isDev ? ORIGINS_DEV : ORIGINS_PROD
     const CREDENTIALS = true
 
 
-    const FIRST_AND_LASTNAME = "^(?!.*\\s{2})[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}(?:\\s[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}){0,2}$"
-    const VALID_EMAIL = "^[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$"
+    const FIRST_AND_LASTNAME = !isDev ? "^(?!.*\\s{2})[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}(?:\\s[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}){0,2}$" : ''
+    // const VALID_EMAIL = "^[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$"
+    const VALID_EMAIL = "^(?=.{1,254}$)(?=[^@]{1,64}@)[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$"
     const VALID_USERNAME = "^(?!.*\\.\\.)(?!.*_\\.)(?!.*\\._)[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9](?:[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9_.]*(?:\\.[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9])?)*$"
     const VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÀÉÈÍÌÓÒÚÙáàéèíìúùÑñ0-9_]+(?:\\.[A-Za-zÁÀÉÈÍÌÓÒÚÙáàéèíìúùÑñ0-9_]+)*[^.]$"
 
-    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO_COMPAS_DB_LA, PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER }
+    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO, PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER }
 }
 
 

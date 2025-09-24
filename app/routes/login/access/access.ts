@@ -44,7 +44,7 @@ interface RequestUserType {
 const validarCredenciales = async (req: Request, res: Response, next: NextFunction) => {
     const { nombreUsuario, password } = req.body;
     try {
-        const user = await User.loginVisitinUser(nombreUsuario, password);
+        const user = await User.login(nombreUsuario, password);
         (req as RequestUserType).userReqClient = user;
         next();
     } catch (err) {
