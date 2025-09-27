@@ -1,6 +1,6 @@
 
-import User from "../user/user";
-import { UserError } from "../user/errors/userError";
+import User from "../../daos/user/user";
+import { UserError } from "../../daos/user/errors/userError";
 import { adminUser } from '../../models/administrators'
 import { validarNumEntero, validType } from "../../functions/functions";
 import bcrypt from "bcrypt"//Para encriptar contraseñas

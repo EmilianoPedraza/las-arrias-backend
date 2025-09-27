@@ -4,9 +4,9 @@ import cookieParser from 'cookie-parser';
 
 import express, { json } from "express"
 //Tipos de errores
-import { UserError } from "../../../controllers/user/errors/userError"
+import { UserError } from "../../../daos/user/errors/userError"
 //controladores
-import localUser from "../../../controllers/user/localUser/localUser"
+import localUser from "../../../daos/user/localUser/localUser"
 
 loadEnvironmentVars()
 const { SECRET_VALID_USER } = environmentVars()

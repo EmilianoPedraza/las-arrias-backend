@@ -1,14 +1,13 @@
 import { loadEnvironmentVars, environmentVars } from "./config";
-
 import mongoose from "mongoose";
 
 
-//para redis
-
-// import { createClient } from "redis";
 
 loadEnvironmentVars()
 const { MONGO } = environmentVars()
+
+
+
 
 const connectDb = async () => {
     try {
@@ -21,10 +20,4 @@ const connectDb = async () => {
 }
 
 
-// const conectRedis = async () => {
-//     return createClient({
-//         url: 'redis://localhost:6379',
-//     })
-// }
-
-export { connectDb, /*conectRedis*/ }
+export { connectDb }

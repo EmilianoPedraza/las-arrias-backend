@@ -2,11 +2,11 @@ import { Router } from "express";
 import jsw from "jsonwebtoken"
 import cookieParser from "cookie-parser";
 import COOKIES_LOG_OPTIONS from "../configCookies/configCookies";
-import User from "../../../controllers/user/user";
+import User from "../../../daos/user/user";
 import { createToken } from "../functions/functions";
 import { loadEnvironmentVars, environmentVars } from "../../../config/config";
 import { verifyAccesToken, RequestConToken, AccesToken } from "../../auth/midlewares";
-import { UserType } from "../../../types/typeUser";
+import { UserType } from "../../../types/users/userTyp";
 
 
 loadEnvironmentVars()

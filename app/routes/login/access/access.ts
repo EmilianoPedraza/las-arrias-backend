@@ -4,10 +4,10 @@ import cookieParser from "cookie-parser"
 //variables de entorno
 import { loadEnvironmentVars, environmentVars } from "../../../config/config";
 //clase user
-import User from "../../../controllers/user/user";
+import User from "../../../daos/user/user";
 //Types 
-import { UserError } from "../../../controllers/user/errors/userError";
-import { UserType } from "../../../types/typeUser"
+import { UserError } from "../../../daos/user/errors/userError";
+import { UserType } from "../../../types/users/userTyp"
 //configuracion de cookies
 import COOKIES_LOG_OPTIONS from "../configCookies/configCookies";
 

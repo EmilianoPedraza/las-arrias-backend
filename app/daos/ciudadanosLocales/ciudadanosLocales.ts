@@ -5,7 +5,7 @@ const { validarApellido, validarNombre } = User;
 import { localCitizens } from "../../models/ciudadanosLocales";
 
 // Tipos
-import { LocalCitizens } from "../../types/typeUser";
+import { LocalCitizens } from "../../types/users/userTyp";
 
 // Funciones utilitarias
 import { validarNumEntero, validType } from "../../functions/functions";

@@ -1,7 +1,7 @@
-import User from "../controllers/user/user";
+import User from "../daos/user/user";
 import { loadEnvironmentVars } from "../config/config";
 import { Router, urlencoded, json } from "express";
-import { UserError } from "../controllers/user/errors/userError";
+import { UserError } from "../daos/user/errors/userError";
 
 
 loadEnvironmentVars();

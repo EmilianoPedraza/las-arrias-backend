@@ -1,8 +1,8 @@
 import { Router, json, urlencoded, Request, Response, NextFunction } from "express"
 //clase y tipo admin
-import { UserAdmin, AdminUser } from "../../controllers/admin/adminUser"
+import { UserAdmin, AdminUser } from "../../daos/admin/adminUser"
 //errores UserError
-import { UserError } from "../../controllers/user/errors/userError"
+import { UserError } from "../../daos/user/errors/userError"
 //para poder usar variables de entorno
 import { loadEnvironmentVars, environmentVars } from "../../config/config";
 //libreria ppara cookies

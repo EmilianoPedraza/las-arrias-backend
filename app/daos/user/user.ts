@@ -1,19 +1,32 @@
 import { loadEnvironmentVars, environmentVars } from "../../config/config";
 
-import { UserError } from "./errors/userError"//Clase de error personalizada extendida
-import bcrypt from "bcrypt"//Para encriptar contraseñas
-import { validType, validarStringConExpresion } from "../../functions/functions"//Función que permite validar el tipo de dato de una variable
-//Se importa el modelo de usuario creado para la base de datos
-import { User as UserModel } from "../../models/usuario"; // se utiliza 'as' para renombrar User a UserModel y así evitar conflictos
+import { UserError } from "./errors/userError" // Clase de error personalizada extendida
+import bcrypt from "bcrypt" // Para encriptar contraseñas
+import { validType, validarStringConExpresion } from "../../functions/functions" // Funciones de validación
+import { User as UserModel } from "../../models/usuario"; // Se renombra 'User' a 'UserModel' para evitar conflictos
 
-import { ClientUserType, UserType } from "../../types/typeUser";
-//!
+import { ClientUserType, UserType, CacheCallBack } from "../../types/users/userTyp";
+
 import { validateEmail } from "../../functions/functions";
-//!
-//Carga las variables de entorno 
+import XXH from 'xxhashjs' // Librería para generar hash
+const seed = 0xABCD // Semilla para el hash
+
+// Carga las variables de entorno 
 loadEnvironmentVars()
 const { FIRST_AND_LASTNAME, VALID_USERNAME, VALID_PASSWORD, VALID_EMAIL } = environmentVars()
 
+/**
+ * Clase base User que representa a un usuario del sistema.
+ * 
+ * Métodos principales:
+ * - `buscarPorProps()`: busca usuarios en la BD por propiedad.
+ * - `encriptarPsw()`: encripta la contraseña del usuario antes de guardarla.
+ * - `compararPsw()`: compara contraseñas en texto plano con contraseñas encriptadas.
+ * - `validarNombre()`, `validarApellido()`, `validarNombreUsuario()`, `validarEmail()`, `validarPassword()`: validan campos individuales según condiciones de formato y reglas de negocio.
+ * - `validateRegisterUser()`: valida todos los campos del usuario antes de registrarlo en la BD.
+ * - `login()`: valida credenciales de acceso y retorna el usuario autenticado.
+ * - `saveCacheHash()`: genera un hash del nombre de usuario y lo envía a través de un callback (ej. para almacenamiento en Redis).
+ */
 export default class User {
     constructor(
         public nombre: string,
@@ -21,13 +34,15 @@ export default class User {
         public nombreUsuario: string,
         public email: string,
         public password: string,
-        // public creadoEn: Date,
-        // public actualizadoEn: Date
     ) { }
 
-
-    //?BUSCAR UN USUARIO POR CAMPO, SI EXISTE RETORNA UN ARRAY CON EL USUARIO, CASO CONTRARIO FALSE
-    static buscarPorProps = async (prop: string, valor: string | number): Promise<object | boolean> => {//!problema de tipado en retorno
+    /**
+     * Busca un usuario en la base de datos por una propiedad específica.
+     * @param prop - Propiedad a buscar (ej: 'email', 'nombreUsuario').
+     * @param valor - Valor asociado a la propiedad.
+     * @returns El usuario encontrado o `false` si no existe.
+     */
+    static buscarPorProps = async (prop: string, valor: string | number): Promise<object | boolean> => {
         const usuario = await UserModel.find({ [prop]: valor }).lean()
         if (usuario.length > 0) {
             return usuario[0]
@@ -35,8 +50,10 @@ export default class User {
         return false
     }
 
-
-    //?ENCRIPTAR CONTRASEÑA
+    /**
+     * Encripta la contraseña del usuario utilizando bcrypt.
+     * Reemplaza la contraseña original con la encriptada.
+     */
     encriptarPsw = async (): Promise<true | never> => {
         try {
             const newPsw = await bcrypt.hash(this.password, 10)
@@ -47,9 +64,12 @@ export default class User {
         }
     }
 
-
-
-    //?COMPARAR CONTRASEÑA CON CONTRASEÑA ENCRIPTADA:(internamente encripta la contraseña que no está encriptada para compararla con la que si originalmente)
+    /**
+     * Compara una contraseña encriptada con una en texto plano.
+     * @param pswEncr - Contraseña encriptada almacenada.
+     * @param psw - Contraseña en texto plano provista por el usuario.
+     * @returns `true` si coinciden, de lo contrario `false`.
+     */
     static compararPsw = async (pswEncr: string, psw: string): Promise<boolean | never> => {
         try {
             if (await bcrypt.compare(psw, pswEncr)) {
@@ -61,9 +81,10 @@ export default class User {
         }
     }
 
-
-
-    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN NOMBRE CON CONDICIONES DE FORMATO CORRECTO
+    /**
+     * Valida que el nombre cumpla con las condiciones de formato.
+     * Lanza un error si el valor es inválido.
+     */
     static validarNombre(nombre: string) {
         if (!nombre) {
             throw new UserError('El campo nombre no existe', "BadRequest")
@@ -76,9 +97,9 @@ export default class User {
         }
     }
 
-
-
-    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN APELLIDO CON CONDICIONES DE FORMATO CORRECTO  O GENERA ERROR BADREQUEST
+    /**
+     * Valida que el apellido cumpla con las condiciones de formato.
+     */
     static validarApellido(apellido: string) {
         if (!apellido) {
             throw new UserError('El campo apellido no existe', "BadRequest");
@@ -91,9 +112,9 @@ export default class User {
         }
     }
 
-
-
-    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN NOMBRE DE USUARIO CON CONDICIONES DE FORMATO CORRECTO  O GENERA ERROR BADREQUEST
+    /**
+     * Valida que el nombre de usuario cumpla con las condiciones de formato.
+     */
     static validarNombreUsuario(nomUser: string) {
         if (!nomUser) {
             throw new UserError('El campo nombreUsuario no existe', "BadRequest");
@@ -106,8 +127,9 @@ export default class User {
         }
     }
 
-
-    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN EMAIL CON CONDICIONES DE FORMATO CORRECTO  O GENERA ERROR BADREQUEST
+    /**
+     * Valida que el email cumpla con las condiciones de formato y sea válido.
+     */
     static validarEmail(email: string) {
         if (!email) {
             throw new UserError('El campo email no existe', "BadRequest");
@@ -120,9 +142,9 @@ export default class User {
         }
     }
 
-
-
-    //?TODAS LAS VALIDACIONES PARA GARANTIZAR UN PASSWORD CON CONDICIONES DE FORMATO CORRECTO  O GENERA ERROR BADREQUEST
+    /**
+     * Valida que el password cumpla con las condiciones de formato y seguridad.
+     */
     static validarPassword(password: string) {
         if (!password) {
             throw new UserError('El campo password no existe', "BadRequest");
@@ -135,41 +157,59 @@ export default class User {
         }
     }
 
-    //?VALIDAR QUE TODOS LOS CAMPOS DE USER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
+    /**
+     * Valida todos los campos de un usuario antes de ser registrado en la BD.
+     * - Nombre
+     * - Apellido
+     * - Nombre de usuario (único)
+     * - Email (único)
+     * - Contraseña (formato y longitud)
+     */
     async validateRegisterUser() {
-        //!Validaciones de nombre
-        User.validarNombre(this.nombre)//validar que el el string cumpla las condiciones
-        //!Validaciones de apellido
-        User.validarApellido(this.apellido)//validar que el el string cumpla las condiciones
-        //!Validaciones de nombre de usuario
-        User.validarNombreUsuario(this.nombreUsuario)//validar que el el string cumpla las condiciones
+        User.validarNombre(this.nombre)
+        User.validarApellido(this.apellido)
+        User.validarNombreUsuario(this.nombreUsuario)
+
         if (await User.buscarPorProps('nombreUsuario', this.nombreUsuario)) {
             throw new UserError('El nombre de usuario ya existe en la base de datos', "Unauthorized")
         }
-        //!Validaciones de email
-        User.validarEmail(this.email)//validar que el el string cumpla las condiciones
+
+        User.validarEmail(this.email)
         if (await User.buscarPorProps('email', this.email)) {
             throw new UserError('El email ya existe en la base de datos', "Unauthorized")
         }
-        //!Validaciones de password
-        User.validarPassword(this.password)//validar que el el string cumpla las condiciones
+
+        User.validarPassword(this.password)
         if (this.password.length < 7) {
             throw new UserError('Longitud de password insuficiente', "BadRequest")
         }
     }
 
-    // //?LOGIN DE USUARIO
+    /**
+     * Autentica a un usuario mediante nombre de usuario y contraseña.
+     * @returns El usuario autenticado si las credenciales son correctas.
+     */
     static async login(nombreUser: string, password: string): Promise<UserType> {
-        User.validarNombreUsuario(nombreUser)//valida el nombre de usuario, si no cumple con el formato de string genera error badrequest
-        User.validarPassword(password)//valida la contraseña, si no cumple con el formato de string genera error badrequest
-        const user = await User.buscarPorProps('nombreUsuario', nombreUser) as ClientUserType //retorna false si no existe el usuario, caso contrario lo trae
+        User.validarNombreUsuario(nombreUser)
+        User.validarPassword(password)
+
+        const user = await User.buscarPorProps('nombreUsuario', nombreUser) as ClientUserType
         if (!user) {
             throw new UserError('El campo nombreUsuario no existe', "BadRequest");
         }
-        if (await User.compararPsw(user.password, password)) {//Comparar contraseña provista por el usuario desde el cliente con el de la base de datos
+
+        if (await User.compararPsw(user.password, password)) {
             return user
         }
         throw new UserError('Contraseña incorrecta', 'Unauthorized');
     }
-}
 
+    /**
+     * Genera un hash a partir del nombre de usuario y lo guarda en caché
+     * a través de un callback (ej: uso con Redis).
+     */
+    async saveCacheHash(cb: CacheCallBack): Promise<void> {
+        const hash = XXH.h32(this.nombreUsuario, seed).toString(16)
+        cb(hash)
+    }
+}

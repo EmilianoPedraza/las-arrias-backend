@@ -1,5 +1,5 @@
 import jsw from "jsonwebtoken"
-import { UserType } from "../../../types/typeUser"
+import { UserType } from "../../../types/users/userTyp"
 
 //* CREACIÓN DE TOKEN JWT
 /**

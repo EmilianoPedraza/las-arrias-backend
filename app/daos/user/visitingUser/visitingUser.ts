@@ -1,7 +1,12 @@
 import { VisitingUser } from "../../../models/usuario";
 import { UserError } from "../errors/userError";
 import User from "../user";
-import { ClientVisitingUserType, VisitingUserType } from "../../../types/typeUser";
+
+import { ClientVisitingUserType } from "../../../types/visitingUsersTyp";
+import { VisitingUserType } from "../../../types/visitingUsersTyp";
+
+
+
 export default class visitingUser extends User {
     constructor(
         nombre: string,

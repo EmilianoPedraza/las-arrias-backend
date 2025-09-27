@@ -1,15 +1,13 @@
-import { UserError } from "../../controllers/user/errors/userError"
+import { UserError } from "../../daos/user/errors/userError"
 
 //clase
-import { LocalCitizensClass } from "../../controllers/ciudadanosLocales/ciudadanosLocales"
+import { LocalCitizensClass, ErrorCreateNewLocalCitizens } from "../../daos/ciudadanosLocales/ciudadanosLocales"
+//tipos
+import { LocalCitizens } from '../../types/users/userTyp'
 //middleware de validacion de administradores
 import { verifyAccesTokenAdminGeneral } from "../auth/midlewares"
-
-//tipos
-import { LocalCitizens } from '../../types/typeUser'
-import { ErrorCreateNewLocalCitizens } from '../../controllers/ciudadanosLocales/ciudadanosLocales'
 //!
-import User from "../../controllers/user/user"
+import User from "../../daos/user/user"
 //route
 import { json, Router, urlencoded, Request, Response, NextFunction } from "express"
 const localCitizensRoutes = Router()

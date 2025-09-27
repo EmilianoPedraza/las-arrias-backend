@@ -1,7 +1,7 @@
-//Modelo localUser
+//Modelo localUser 
 import { LocalUser } from "../../../models/usuario";
 //Tipos de local user
-import { ClientLocalUserType, LocalUserType } from "../../../types/typeUser";
+import { LocalUserType, ClientLocalUserType } from "../../../types/users/localUsersTyp";
 //Modulo de errores personalizados
 import { UserError } from "../errors/userError";
 //Función que permite validar el tipo de dato de una variable
@@ -10,7 +10,15 @@ import { validType, validarNumEntero } from "../../../functions/functions";
 import { LocalCitizensClass } from "../../ciudadanosLocales/ciudadanosLocales";
 
 
-//Clase base
+/**
+ * Clase que representa a un usuario local, heredando de la clase base User.
+ * 
+ * - `validateLocalUser()`: valida que los datos propios del usuario local cumplan con las condiciones de formato y unicidad.
+ * - `guardarNuevoLocalUser()`: guarda un nuevo usuario local en la base de datos.
+ * - `validateCitizen()`: comprueba que exista un ciudadano en el sistema que coincida con los datos del usuario local.
+ * - `registerLocalUser()`: orquesta el proceso de registro, validando, encriptando la contraseña y guardando el nuevo usuario.
+ * - `loginLocalUser()`: método estático que valida credenciales y retorna los datos del usuario en caso de login exitoso.
+ */
 import User from "../user";
 export default class localUser extends User {
     constructor(
@@ -25,33 +33,37 @@ export default class localUser extends User {
         super(nombre, apellido, nombreUsuario, email, password)
     }
 
-
-
-    //?VALIDAR QUE TODOS LOS CAMPOS DE lLOCALUSER CUMPLAN CON SUS CONDICIONES DE FORMATO Y MÁS
+    /**
+     * Valida que los campos específicos de LocalUser cumplan con las condiciones necesarias.
+     * - DNI debe existir, ser número entero y tener 7 u 8 dígitos.
+     * - DNI debe ser único en la base de datos.
+     * - Teléfono, si existe, debe ser numérico.
+     */
     validateLocalUser = async () => {
-        if (!this.dni) {//Validar que los campos no estén indefinidos
+        if (!this.dni) { // Validar que DNI esté definido
             throw new UserError("El campo DNI no existe", "BadRequest");
         }
-        if (!validType(this.dni, 'number')) {//Validar que DNI sea de tipo number
+        if (!validType(this.dni, 'number')) { // Validar tipo de dato
             throw new UserError('El DNI no es un tipo de dato valido', "BadRequest");
         }
-        if (!validarNumEntero(this.dni)) {//Validar que DNI sea de tipo entero y no decimal
+        if (!validarNumEntero(this.dni)) { // Validar que sea entero
             throw new UserError('El DNI incumple las condiciones de formato', "BadRequest")
         }
-        if (!(this.dni >= 999999 && this.dni <= 99999999)) {//Validar que DNI sea de 7 o 8 digitos
+        if (!(this.dni >= 999999 && this.dni <= 99999999)) { // Validar longitud (7 u 8 dígitos)
             throw new UserError('El DNI incumple las condiciones de formato', "BadRequest")
         }
-        if (await User.buscarPorProps('dni', this.dni)) {
+        if (await User.buscarPorProps('dni', this.dni)) { // Validar que no exista ya en la BD
             throw new UserError('El DNI de usuario ya existe', "Unauthorized")
         }
-        if (this.telefono && !validType(this.telefono, 'number')) {
+        if (this.telefono && !validType(this.telefono, 'number')) { // Validar tipo de teléfono si existe
             throw new UserError('El Número de telefono no es un tipo de dato valido', "BadRequest");
         }
     }
 
-
-
-    //?GUARDAR UN NUEVO DOCUMENTO(UN LOCALUSER)
+    /**
+     * Guarda un nuevo LocalUser en la base de datos, encapsulando la lógica de persistencia.
+     * Lanza un error controlado en caso de fallo.
+     */
     guardarNuevoLocalUser = async () => {
         try {
             const nuevoUsuario = new LocalUser({
@@ -69,9 +81,10 @@ export default class localUser extends User {
         }
     }
 
-
-
-    //?VALIDAR QUE EXISTA UN CIUDADANO QUE COINCIDA CON LOS DATOS DEL lOCALUSER
+    /**
+     * Valida que exista un ciudadano registrado que coincida con los datos básicos
+     * del LocalUser (nombre, apellido, DNI).
+     */
     validateCitizen = async (): Promise<void> => {
         const data = { nombre: this.nombre, apellido: this.apellido, dni: this.dni }
         if (!await LocalCitizensClass.validateExistenceOfaCitizen(data)) {
@@ -79,33 +92,42 @@ export default class localUser extends User {
         }
     }
 
-    //?REGISTRAR UN NUEVO USUARIO
+    /**
+     * Registra un nuevo LocalUser en el sistema.
+     * - Valida campos base de User.
+     * - Valida campos específicos de LocalUser.
+     * - Comprueba existencia de ciudadano asociado.
+     * - Encripta la contraseña.
+     * - Guarda el nuevo registro en la BD.
+     */
     async registerLocalUser() {
-        //Validar que todos los campos de User cumplan con sus condiciones de formato y más.
         await this.validateRegisterUser()
-        //Validar que todos los campos de localUser cumplan con sus condiciones de formato y más.
         await this.validateLocalUser()
-        //Validar que el usuario exista en la base de datos de ciudadanos.
         await this.validateCitizen()
-        //?SE CAMBIA LA CONTRASEÑA INGRESADA DESEDE EL LADO DEL CLIENTE POR UNA CONTRASEÑA ENCRIPTADA
         await this.encriptarPsw()
-        //Se guarda el documento.
         await this.guardarNuevoLocalUser()
     }
-    //?LOGIN DE USUARIO
+
+    /**
+     * Método estático para autenticar a un LocalUser.
+     * - Valida formato de nombre de usuario y contraseña.
+     * - Busca al usuario por nombre de usuario.
+     * - Compara la contraseña provista con la almacenada.
+     * - Retorna datos esenciales del usuario si la autenticación es exitosa.
+     */
     static async loginLocalUser(nombreUser: string, password: string): Promise<ClientLocalUserType> {
-        User.validarNombreUsuario(nombreUser)//valida el nombre de usuario, si no cumple con el formato de string genera error badrequest
-        User.validarPassword(password)//valida la contraseña, si no cumple con el formato de string genera error badrequest
-        const user = await User.buscarPorProps('nombreUsuario', nombreUser) as LocalUserType//retorna false si no existe el usuario, caso contrario lo trae
+        User.validarNombreUsuario(nombreUser) // Validar formato de nombre de usuario
+        User.validarPassword(password) // Validar formato de contraseña
+
+        const user = await User.buscarPorProps('nombreUsuario', nombreUser) as LocalUserType // Buscar usuario
         if (!user) {
             throw new UserError('El campo nombreUsuario no existe', "BadRequest");
         }
-        if (await User.compararPsw(user.password, password)) {//Comparar contraseña provista por el usuario desde el cliente con el de la base de datos
+
+        if (await User.compararPsw(user.password, password)) { // Comparar contraseñas
             const { _id, nombre, apellido, nombreUsuario, email, telefono, dni } = user
             return { _id, nombre, apellido, nombreUsuario, email, telefono, dni }
         }
         throw new UserError('Contraseña incorrecta', 'Unauthorized');
     }
 }
-
-
