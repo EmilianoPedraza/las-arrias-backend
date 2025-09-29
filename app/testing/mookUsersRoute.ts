@@ -4,7 +4,7 @@ import { Faker, es } from '@faker-js/faker';// Librería para generar datos fals
 import bcrypt from "bcrypt"; // Librería para encriptar contraseñas
 
 import { LocalUser } from "../models/usuario";//Modelo de datos de usuario local
-import RedisCacheManager from "../controllers/redisCacheManager/redisCacheManager";//Clase para manejar Redis
+import RedisCacheManager from "../controllers/redisCacheManager";//Clase para manejar Redis
 import localUser from "../daos/user/localUser/localUser";
 import { LocalUsersArray } from "../types/mookUsersRouteTyp";
 import { UserError } from "../daos/user/errors/userError";

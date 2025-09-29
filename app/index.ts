@@ -5,7 +5,7 @@ import localCitizensRoutes from "./routes/admin/LocalCitizens"
 import adminUserRoute from "./routes/admin/admin";
 
 // Conexión a la base de datos MongoDB Atlas
-import { connectDb } from "./config/connectDb";
+import MongoDbManager from "./controllers/mongoDbManager";
 
 // Configuraciones de entorno y entorno actual (desarrollo o producción)
 import { loadEnvironmentVars, environmentVars, isDev } from "./config/config";
@@ -28,7 +28,7 @@ const app = express()
 //middleware para saber el tiempo de respuesta
 
 // Establecer conexión con la base de datos MongoDB Atlas: internamente ya se asegura de cargar las variables de entorno
-connectDb()
+new MongoDbManager().connectIfRequired()
 // Inicializar variables de entorno
 loadEnvironmentVars()
 const { PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS } = environmentVars()
