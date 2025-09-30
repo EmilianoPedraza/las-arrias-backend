@@ -1,9 +1,7 @@
 import { VisitingUser } from "../../../models/usuario";
 import { UserError } from "../errors/userError";
 import User from "../user";
-
-import { ClientVisitingUserType } from "../../../types/visitingUsersTyp";
-import { VisitingUserType } from "../../../types/visitingUsersTyp";
+import { VisitingUserType, ClientVisitingUserType } from '../../../types/users/visitingUsersTyp'
 
 
 
@@ -39,6 +37,7 @@ export default class visitingUser extends User {
         await this.validateRegisterUser()
         //?SE CAMBIA LA CONTRASEÑA INGRESADA DESEDE EL LADO DEL CLIENTE POR UNA CONTRASEÑA ENCRIPTADA
         await this.encriptarPsw()
+        await this.saveHashInRedis('usernames', 'nombreUsuario')
         await this.guardarNuevoVisitingUSser()
     }
 
