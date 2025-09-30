@@ -34,7 +34,16 @@ class RedisCacheManager {
             console.log(`Error al intentar guardar\nkey:${key}\nargument:${argument}`)
         }
     }
+
+    async searchInRedis(key: string, argument: string): Promise<boolean | void> {
+        try {
+            const res = await this.client.sIsMember(key, argument)
+            return res === 1 ? true : false
+        } catch (err) {
+            console.log(`Error al intentar busccar\nkey:${key}\nargument:${argument}`)
+        }
+    }
 }
 
-
-export default RedisCacheManager
+const conectionRedis = new RedisCacheManager()
+export default conectionRedis

@@ -4,7 +4,7 @@ import { Faker, es } from '@faker-js/faker';// Librería para generar datos fals
 import bcrypt from "bcrypt"; // Librería para encriptar contraseñas
 
 import { LocalUser } from "../models/usuario";//Modelo de datos de usuario local
-import RedisCacheManager from "../controllers/redisCacheManager";//Clase para manejar Redis
+import conectionRedis from "../controllers/redisCacheManager";//Clase para manejar Redis
 import localUser from "../daos/user/localUser/localUser";
 import { LocalUsersArray } from "../types/mookUsersRouteTyp";
 import { UserError } from "../daos/user/errors/userError";
@@ -17,7 +17,7 @@ testingRoute.use(json()); // Acepta JSON en body
 testingRoute.use(urlencoded({ extended: true })); // Acepta datos de formularios
 
 //* Instancia de cliente Redis
-const redisClient = new RedisCacheManager();
+conectionRedis.connectIfRequired()
 
 /** Genera un número aleatorio (0–99) para inicializar Faker */
 const randomSeed = () => Math.floor(Math.random() * 100);
@@ -163,7 +163,7 @@ testingRoute.get('/secuential', async (req, res) => {
 
     const cant = parseInt(req.query.cant as string);
 
-    const cacheRedisOk = await redisClient.connectRedis(); // True/false si Redis conecta bien
+    const cacheRedisOk = await conectionRedis.connectRedis(); // True/false si Redis conecta bien
 
     for (let i = 0; i <= cant; i++) {
         const user = await createUser('simple'); // Usuario sin password encriptada
@@ -180,7 +180,7 @@ testingRoute.get('/secuential', async (req, res) => {
 
             // Guarda hash en Redis si Redis está conectado
             await userReg.saveCacheHash(async (hash: string) => {
-                cacheRedisOk && await redisClient.saveInRedis('usernames', hash);
+                cacheRedisOk && await conectionRedis.saveInRedis('usernames', hash);
             });
         } catch (er) {
             // Manejo de errores personalizados

@@ -6,9 +6,8 @@ import { LocalUserType, ClientLocalUserType } from "../../../types/users/localUs
 import { UserError } from "../errors/userError";
 //Función que permite validar el tipo de dato de una variable
 import { validType, validarNumEntero } from "../../../functions/functions";
-//
+//Para validar si existen coincidencias con ciudadanos registrados
 import { LocalCitizensClass } from "../../ciudadanosLocales/ciudadanosLocales";
-
 
 /**
  * Clase que representa a un usuario local, heredando de la clase base User.
@@ -105,6 +104,9 @@ export default class localUser extends User {
         await this.validateLocalUser()
         await this.validateCitizen()
         await this.encriptarPsw()
+        //!Aquí se guarda el nombre de usuario en redis↙↙↙
+        await this.saveHashInRedis('usernames', 'nombreUsuario')
+        //!
         await this.guardarNuevoLocalUser()
     }
 

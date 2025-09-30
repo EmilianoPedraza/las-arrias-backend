@@ -7,9 +7,16 @@ import { User as UserModel } from "../../models/usuario"; // Se renombra 'User' 
 
 import { ClientUserType, UserType, CacheCallBack } from "../../types/users/userTyp";
 
+// import RedisCacheManager from "../../controllers/redisCacheManager";
+import conectionRedis from "../../controllers/redisCacheManager";
 import { validateEmail } from "../../functions/functions";
+
+
 import XXH from 'xxhashjs' // Librería para generar hash
 const seed = 0xABCD // Semilla para el hash
+
+
+
 
 // Carga las variables de entorno 
 loadEnvironmentVars()
@@ -36,8 +43,52 @@ export default class User {
         public password: string,
     ) { }
 
+    //!
     /**
-     * Busca un usuario en la base de datos por una propiedad específica.
+     * Genera un hash hexadecimal a partir de una cadena de texto utilizando xxHash.
+    */
+    hashFormation(stringForHash: string): string { return XXH.h32(stringForHash, seed).toString(16) }
+
+
+    /**
+     * Guarda en redis un valor seleccionado de las keys de User en redis.
+     * Es decir, no le pasas directamente el valor puesto que el valor utilizado es el instanciado en esta clase,
+     * por tanto, solo se pasa la propiedad que tiene el valor.
+     * @param keyRedis - Clave en Redis donde se almacenará el hash.
+     * @param prop - Propiedad que se hasheara y almacenara ('nombre', 'apellido', 'nombreUsuario', 'email').
+     * @returns - void
+     */
+    async saveHashInRedis(keyRedis: string, prop: 'nombre' | 'apellido' | 'nombreUsuario' | 'email'): Promise<void> {
+        try {
+            const hashValue = this.hashFormation(this[prop])
+            await conectionRedis.saveInRedis(keyRedis, hashValue)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    /**
+     * Compara el hash de una propiedad del usuario con los valores almacenados en Redis.
+     * Es decir, no le pasas directamente el valor puesto que el valor utilizado internamente es el instanciado en esta clase,
+     * por tanto, solo se pasa la propiedad que tiene el valor.
+     * 
+     * @param keyRedis - Clave en Redis donde se almacenan los hashes.
+     * @param prop - Propiedad del usuario a comparar ('nombre', 'apellido', 'nombreUsuario', 'email').
+     * @returns - `true` si el hash existe en Redis, `false` si no existe, o `undefined` en caso de error.
+     */
+    async propUserCompareRedis(keyRedis: string, prop: 'nombre' | 'apellido' | 'nombreUsuario' | 'email') {
+        try {
+            const hashVal = this.hashFormation(this[prop])
+            return await conectionRedis.searchInRedis(keyRedis, hashVal)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    //!
+
+
+
+    /**
+     * Busca un usuario en la base de datos de mongo por una propiedad específica.
      * @param prop - Propiedad a buscar (ej: 'email', 'nombreUsuario').
      * @param valor - Valor asociado a la propiedad.
      * @returns El usuario encontrado o `false` si no existe.
@@ -169,16 +220,19 @@ export default class User {
         User.validarNombre(this.nombre)
         User.validarApellido(this.apellido)
         User.validarNombreUsuario(this.nombreUsuario)
+        //! Aquí se verifica que el nombre de usuario no exista ya en redis ⬇⬇
+        const searchUserNmRedis = await this.propUserCompareRedis('usernames', 'nombreUsuario')
 
-        if (await User.buscarPorProps('nombreUsuario', this.nombreUsuario)) {
+        //Esto es para verificar en mongo si existe el nombre de usuario
+        // const searchUserNmMongo = await User.buscarPorProps('nombreUsuario', this.nombreUsuario)
+
+        if (searchUserNmRedis) {
             throw new UserError('El nombre de usuario ya existe en la base de datos', "Unauthorized")
         }
-
         User.validarEmail(this.email)
         if (await User.buscarPorProps('email', this.email)) {
             throw new UserError('El email ya existe en la base de datos', "Unauthorized")
         }
-
         User.validarPassword(this.password)
         if (this.password.length < 7) {
             throw new UserError('Longitud de password insuficiente', "BadRequest")
@@ -192,24 +246,23 @@ export default class User {
     static async login(nombreUser: string, password: string): Promise<UserType> {
         User.validarNombreUsuario(nombreUser)
         User.validarPassword(password)
-
         const user = await User.buscarPorProps('nombreUsuario', nombreUser) as ClientUserType
         if (!user) {
             throw new UserError('El campo nombreUsuario no existe', "BadRequest");
         }
-
         if (await User.compararPsw(user.password, password)) {
             return user
         }
         throw new UserError('Contraseña incorrecta', 'Unauthorized');
     }
 
+
     /**
      * Genera un hash a partir del nombre de usuario y lo guarda en caché
      * a través de un callback (ej: uso con Redis).
      */
-    async saveCacheHash(cb: CacheCallBack): Promise<void> {
-        const hash = XXH.h32(this.nombreUsuario, seed).toString(16)
+    async saveCacheHash(cb: CacheCallBack): Promise<void> {//!SOlO PARA PRUEBAS
+        const hash = this.hashFormation(this.nombreUsuario)
         cb(hash)
     }
 }
