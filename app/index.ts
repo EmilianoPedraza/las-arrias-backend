@@ -22,6 +22,7 @@ import userChecks from "./routes/userChecks";
 
 //!
 import test from "./testing/mookUsersRoute";
+import deleteUserRoute from "./routes/deleteUser";
 //!
 
 const app = express()
@@ -92,5 +93,6 @@ app.use('/admin', localCitizensRoutes)
 
 
 //!
+app.use('/', deleteUserRoute)
 app.use('/test', test)
 //!

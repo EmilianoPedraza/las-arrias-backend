@@ -43,6 +43,21 @@ class RedisCacheManager {
             console.log(`Error al intentar busccar\nkey:${key}\nargument:${argument}`)
         }
     }
+
+    /**
+     * Si se eliminto el elemento devuelve true, si no existia devuelve false
+     * @param key 
+     * @param argument 
+     */
+    async deleteInRedis(key: string, argument: string): Promise<boolean | void> {
+        try {
+            const res = await this.client.sRem(key, argument)
+            return res === 1 ? true : false
+        } catch (error) {
+            console.log(`redisCacheManager-Error al intentar eliminar\nkey:${key}\nargument:${argument}`)
+            return false
+        }
+    }
 }
 
 const conectionRedis = new RedisCacheManager()

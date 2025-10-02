@@ -83,6 +83,7 @@ export default class User {
             console.error(error)
         }
     }
+
     //!
 
 
@@ -93,7 +94,7 @@ export default class User {
      * @param valor - Valor asociado a la propiedad.
      * @returns El usuario encontrado o `false` si no existe.
      */
-    static buscarPorProps = async (prop: string, valor: string | number): Promise<object | boolean> => {
+    static buscarPorProps = async (prop: string, valor: string | number): Promise<object | false> => {
         const usuario = await UserModel.find({ [prop]: valor }).lean()
         if (usuario.length > 0) {
             return usuario[0]
@@ -264,5 +265,22 @@ export default class User {
     async saveCacheHash(cb: CacheCallBack): Promise<void> {//!SOlO PARA PRUEBAS
         const hash = this.hashFormation(this.nombreUsuario)
         cb(hash)
+    }
+
+
+    /**
+     * 
+     * @param password 
+     */
+    static async deleteUser(password: string, _id: string): Promise<void> {
+        User.validarPassword(password)
+        //busco en mongo el usuario
+        const user = await User.buscarPorProps('_id', _id) as ClientUserType
+        console.log(user)
+        if (user) {
+            this.compararPsw(user.password as string, password)
+            await conectionRedis.deleteInRedis('usernames', XXH.h32(user.nombreUsuario, seed).toString(16))
+            await UserModel.deleteOne({ _id })
+        }
     }
 }
