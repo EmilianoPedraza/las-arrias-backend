@@ -16,7 +16,7 @@ import visitinUserRoute from "./routes/register/visitingUsers/visitingUsers";
 
 // Rutas de login, logout, verificación de tokens y validaciones de usuario
 import login from "./routes/login/login";
-import acceesRoute from "./routes/accesToken";
+//* import acceesRoute from "./routes/accesToken";
 import logout from "./routes/logout"
 import userChecks from "./routes/userChecks";
 
@@ -74,9 +74,6 @@ app.get("/prueba", (_, res) => {
 })
 app.use("/", logout)
 app.use("/", login)
-
-// Ruta para emitir o validar tokens de acceso //!(en etapa de pruebas)
-app.use("/", acceesRoute)
 
 // Registro de usuarios locales y visitantes
 app.use("/localUser/", localUserRoute)
