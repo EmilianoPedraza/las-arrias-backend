@@ -1,6 +1,6 @@
 import { Router, json, urlencoded, Request, Response, NextFunction } from "express"
 //clase y tipo admin
-import { UserAdmin, AdminUser } from "../../daos/admin/adminUser"
+import { UserAdmin, AdminUser } from "../../daos/user/admin/adminUser"
 //errores UserError
 import { UserError } from "../../daos/user/errors/userError"
 //para poder usar variables de entorno
