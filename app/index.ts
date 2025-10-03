@@ -88,8 +88,10 @@ app.use('/admin', adminUserRoute)
 // Rutas para operaciones de administración y validación de ciudadanos locales //!(en etapa de pruebas y en desarrollo aún)
 app.use('/admin', localCitizensRoutes)
 
+//Ruta para eliminar usuario
+app.use('/', deleteUserRoute)
+
 
 //!
-app.use('/', deleteUserRoute)
 app.use('/test', test)
 //!

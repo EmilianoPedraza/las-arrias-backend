@@ -7,10 +7,9 @@ import { loadEnvironmentVars, environmentVars } from "../../../config/config";
 import User from "../../../daos/user/user";
 //Types 
 import { UserError } from "../../../daos/user/errors/userError";
-import { UserType } from "../../../types/users/userTyp"
+import { RequestUserType } from "../../../types/tokens/accessTyps";
 //configuracion de cookies
 import COOKIES_LOG_OPTIONS from "../configCookies/configCookies";
-
 //funciones
 import { createToken, response } from "../functions/functions";
 
@@ -28,12 +27,6 @@ const loginAcces = Router()
 loginAcces.use(json())
 loginAcces.use(urlencoded({ extended: true }))
 loginAcces.use(cookieParser(SECRET_LOG_ACCES_TOKEN))
-
-
-
-interface RequestUserType {
-    userReqClient?: UserType
-}
 
 
 //? VALIDACIÓN DE INGRESO DE USUARIOS
@@ -80,7 +73,7 @@ loginAcces.post("/access", validarCredenciales, async (req, res) => {
             throw new Error()
         }
     } catch (error) {
-        res.status(500).send({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
+        res.status(500).json({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
     }
 })
 

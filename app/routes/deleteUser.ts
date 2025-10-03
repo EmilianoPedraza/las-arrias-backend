@@ -2,7 +2,8 @@ import { Router, urlencoded, json } from "express";
 import User from "../daos/user/user";
 import cookieParser from "cookie-parser"
 import { loadEnvironmentVars, environmentVars } from "../config/config";
-import { verifyAccessSuccessfulToken, RequestConToken } from "./auth/midlewares";
+import { verifyAccessSuccessfulToken } from "./auth/midlewares";
+import { RequestConToken } from "../types/tokens/accessTyps";
 import jsw from 'jsonwebtoken'
 loadEnvironmentVars()
 const { SECRET_LOG_ACCES_TOKEN } = environmentVars()
@@ -22,7 +23,7 @@ deleteUserRoute.delete("/deleteuser", verifyAccessSuccessfulToken, (req, res) =>
     if (password && token) {
         const data = jsw.decode(token) as { [key: string]: any }
         User.deleteUser(password as string, data._id)
-        res.status(200).json({
+        res.status(200).clearCookie('access_successful').json({
             datosObtenidos: data,
             psw: password
         })

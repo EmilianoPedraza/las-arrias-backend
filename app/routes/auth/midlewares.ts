@@ -1,5 +1,6 @@
 import { loadEnvironmentVars, environmentVars } from "../../config/config";
 import { Request, Response, NextFunction } from "express";
+import { RequestConToken } from "../../types/tokens/accessTyps";
 
 import jsw from "jsonwebtoken"
 
@@ -7,14 +8,6 @@ import jsw from "jsonwebtoken"
 
 loadEnvironmentVars()
 const { SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER } = environmentVars()
-
-export type AccesToken = { _id: string, __t: string }
-export interface RequestConToken extends Request {
-    userTokenVerificado?: AccesToken;
-    userToken: string;
-}
-
-
 
 /**
  * Middleware para verificar el token firmado `access_token_admin_general` en las cookies.

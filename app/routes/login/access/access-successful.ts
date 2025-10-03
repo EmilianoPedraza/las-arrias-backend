@@ -5,8 +5,9 @@ import COOKIES_LOG_OPTIONS from "../configCookies/configCookies";
 import User from "../../../daos/user/user";
 import { createToken } from "../functions/functions";
 import { loadEnvironmentVars, environmentVars } from "../../../config/config";
-import { verifyAccesToken, RequestConToken, AccesToken } from "../../auth/midlewares";
+import { verifyAccesToken } from "../../auth/midlewares";
 import { UserType } from "../../../types/users/userTyp";
+import { RequestConToken, AccesToken, UserAuthorizations } from "../../../types/tokens/accessTyps";
 
 
 loadEnvironmentVars()
@@ -14,17 +15,6 @@ const { SECRET_LOG_ACCES_USER_TOKEN } = environmentVars()
 const loginAccescSuccessful = Router()
 loginAccescSuccessful.use(cookieParser(SECRET_LOG_ACCES_USER_TOKEN))
 
-
-
-type UserAuthorizations = {
-    createProjects: boolean
-    getProyects: boolean
-    getBusiness: boolean
-    getServices: boolean
-    createBusiness: boolean
-    createService: boolean
-    configData: boolean,
-} & AccesToken
 
 
 
@@ -78,7 +68,7 @@ loginAccescSuccessful.post('/access-successful', verifyAccesToken, async (req, r
             res.status(200).cookie('access_successful', token, COOKIES_LOG_OPTIONS).json({ ok: true })
         }
     } catch (error) {
-        res.status(500).send({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
+        res.status(500).json({ error: "InternalError", message: "Ocurrio un error en la base de datos" })
     }
 })
 

@@ -1,6 +1,7 @@
 import { ClientLocalUserType } from "./localUsersTyp"//tipos de usuarios locales
 import { ClientVisitingUserType } from "./visitingUsersTyp"//tipos de usuarios visitantes
 
+
 //-----------------------------------------------------------------
 //lo que se le envia al cliente (puede ser local o visitante)
 type ClientUser = ClientLocalUserType | ClientVisitingUserType
