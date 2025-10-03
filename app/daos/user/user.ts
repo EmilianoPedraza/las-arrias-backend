@@ -43,7 +43,6 @@ export default class User {
         public password: string,
     ) { }
 
-    //!
     /**
      * Genera un hash hexadecimal a partir de una cadena de texto utilizando xxHash.
     */
@@ -63,7 +62,7 @@ export default class User {
             const hashValue = this.hashFormation(this[prop])
             await conectionRedis.saveInRedis(keyRedis, hashValue)
         } catch (error) {
-            console.error(error)
+            console.error('User.saveHashInRedis:', error)
         }
     }
     /**
@@ -80,12 +79,9 @@ export default class User {
             const hashVal = this.hashFormation(this[prop])
             return await conectionRedis.searchInRedis(keyRedis, hashVal)
         } catch (error) {
-            console.error(error)
+            console.error('User.propUserCompareRedis:', error)
         }
     }
-
-    //!
-
 
 
     /**

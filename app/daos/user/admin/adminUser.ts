@@ -1,8 +1,8 @@
 
-import User from "../../daos/user/user";
-import { UserError } from "../../daos/user/errors/userError";
-import { adminUser } from '../../models/administrators'
-import { validarNumEntero, validType } from "../../functions/functions";
+import User from "../user";
+import { UserError } from "../errors/userError";
+import { adminUser } from '../../../models/administrators'
+import { validarNumEntero, validType } from "../../../functions/functions";
 import bcrypt from "bcrypt"//Para encriptar contraseñas
 
 const { validarPassword, validarApellido, validarNombre, compararPsw } = User
