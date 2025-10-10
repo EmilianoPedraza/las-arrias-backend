@@ -21,12 +21,22 @@ import logout from "./routes/logout"
 import userChecks from "./routes/userChecks";
 
 //!
-import test from "./testing/mookUsersRoute";
-import deleteUserRoute from "./routes/deleteUser";
+// Para implementar socket Io
+// import { Server } from "socket.io"
+// import { createServer } from "http"
+
+
+
+import test from "./testing/mookUsersRoute"; //*solo pruebas
+import deleteUserRoute from "./routes/deleteUser"; //! Falta que elimine ambos tokens, no solo uno
 //!
 
+
+
 const app = express()
-//middleware para saber el tiempo de respuesta
+//Creacion de servidor HTTP
+// const httpServer = createServer(app)
+// const io = new Server(httpServer)
 
 // Establecer conexión con la base de datos MongoDB Atlas: internamente ya se asegura de cargar las variables de entorno
 connectionMongo.connectIfRequired()
