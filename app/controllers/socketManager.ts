@@ -20,12 +20,15 @@ class SocketManager {
 
 class SocketUsersEvents {
     readonly user
+    readonly socket
     constructor(user: UserType, socket: Server) {
         this.user = user
+        this.socket = socket
     }
     public static verifyUsernames(socket: Server) {
         socket.on('client:searchUsernames', (data) => {
             // Handle the searchUsernames event here
+            console.log(data)
             socket.emit('server:searchUsernamesRespose', () => {
             })
         })
