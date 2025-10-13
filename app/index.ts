@@ -33,7 +33,7 @@ import deleteUserRoute from "./routes/deleteUser"; //! Falta que elimine ambos t
 
 
 
-const app = express()
+export const app = express()
 //Creacion de servidor HTTP
 // const httpServer = createServer(app)
 // const io = new Server(httpServer)
