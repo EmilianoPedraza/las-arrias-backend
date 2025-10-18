@@ -1,3 +1,4 @@
+
 //Modelo localUser 
 import { LocalUser } from "../../../models/usuario";
 //Tipos de local user
@@ -8,7 +9,9 @@ import { UserError } from "../errors/userError";
 import { validType, validarNumEntero } from "../../../functions/functions";
 //Para validar si existen coincidencias con ciudadanos registrados
 import { LocalCitizensClass } from "../../ciudadanosLocales/ciudadanosLocales";
-
+import { UserRedis, conectionRedis } from "../../../controllers/redisCacheManager";
+import User from "../user";//clase de la cual se extiende
+import { Types } from "mongoose";
 /**
  * Clase que representa a un usuario local, heredando de la clase base User.
  * 
@@ -18,8 +21,8 @@ import { LocalCitizensClass } from "../../ciudadanosLocales/ciudadanosLocales";
  * - `registerLocalUser()`: orquesta el proceso de registro, validando, encriptando la contraseña y guardando el nuevo usuario.
  * - `loginLocalUser()`: método estático que valida credenciales y retorna los datos del usuario en caso de login exitoso.
  */
-import User from "../user";
 export default class localUser extends User {
+    private _id: Types.ObjectId              // declarada explícitamente
     constructor(
         public dni: number,
         public telefono: number | undefined,
@@ -30,6 +33,7 @@ export default class localUser extends User {
         password: string
     ) {
         super(nombre, apellido, nombreUsuario, email, password)
+        this._id = new Types.ObjectId()
     }
 
     /**
@@ -63,9 +67,10 @@ export default class localUser extends User {
      * Guarda un nuevo LocalUser en la base de datos, encapsulando la lógica de persistencia.
      * Lanza un error controlado en caso de fallo.
      */
-    guardarNuevoLocalUser = async () => {
+    guardarNuevoLocalUser = async (_id: Types.ObjectId) => {
         try {
             const nuevoUsuario = new LocalUser({
+                _id: _id,
                 nombre: this.nombre,
                 apellido: this.apellido,
                 nombreUsuario: this.nombreUsuario,
@@ -104,10 +109,20 @@ export default class localUser extends User {
         await this.validateLocalUser()
         await this.validateCitizen()
         await this.encriptarPsw()
+
         //!Aquí se guarda el nombre de usuario en redis↙↙↙
-        await this.saveHashInRedis('usernames', 'nombreUsuario')
+        const dataForRedis = {
+            _id: this._id,
+            nombreUsuario: this.nombreUsuario,
+            nombre: this.nombre,
+            apellido: this.apellido,
+            email: this.email,
+            __t: 'LocalUser'
+        }
+        await UserRedis.saveSetUser(dataForRedis, conectionRedis)//se guarda como set mas que todo para busquedas rapidas
+        await UserRedis.saveHashUser(dataForRedis, conectionRedis)//se guarda como hash, para almacenar la mayoria de datos
         //!
-        await this.guardarNuevoLocalUser()
+        await this.guardarNuevoLocalUser(this._id)
     }
 
     /**

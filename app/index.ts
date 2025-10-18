@@ -27,7 +27,7 @@ import userChecks from "./routes/userChecks";
 
 
 
-import test from "./testing/mookUsersRoute"; //*solo pruebas
+// import test from "./testing/mookUsersRoute"; //*solo pruebas
 import deleteUserRoute from "./routes/deleteUser"; //! Falta que elimine ambos tokens, no solo uno
 //!
 
@@ -102,6 +102,6 @@ app.use('/admin', localCitizensRoutes)
 app.use('/', deleteUserRoute)
 
 
-//!
-app.use('/test', test)
-//!
+// //!
+// app.use('/test', test)
+// //!

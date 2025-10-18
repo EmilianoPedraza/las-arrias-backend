@@ -8,15 +8,9 @@ import { User as UserModel } from "../../models/usuario"; // Se renombra 'User' 
 import { ClientUserType, UserType, CacheCallBack } from "../../types/users/userTyp";
 
 // import RedisCacheManager from "../../controllers/redisCacheManager";
-import conectionRedis from "../../controllers/redisCacheManager";
+
+import { UserRedis, conectionRedis } from "../../controllers/redisCacheManager";
 import { validateEmail } from "../../functions/functions";
-
-
-import XXH from 'xxhashjs' // Librería para generar hash
-const seed = 0xABCD // Semilla para el hash
-
-
-
 
 // Carga las variables de entorno 
 loadEnvironmentVars()
@@ -42,47 +36,6 @@ export default class User {
         public email: string,
         public password: string,
     ) { }
-
-    /**
-     * Genera un hash hexadecimal a partir de una cadena de texto utilizando xxHash.
-    */
-    hashFormation(stringForHash: string): string { return XXH.h32(stringForHash, seed).toString(16) }
-
-
-    /**
-     * Guarda en redis un valor seleccionado de las keys de User en redis.
-     * Es decir, no le pasas directamente el valor puesto que el valor utilizado es el instanciado en esta clase,
-     * por tanto, solo se pasa la propiedad que tiene el valor.
-     * @param keyRedis - Clave en Redis donde se almacenará el hash.
-     * @param prop - Propiedad que se hasheara y almacenara ('nombre', 'apellido', 'nombreUsuario', 'email').
-     * @returns - void
-     */
-    async saveHashInRedis(keyRedis: string, prop: 'nombre' | 'apellido' | 'nombreUsuario' | 'email'): Promise<void> {
-        try {
-            const hashValue = this.hashFormation(this[prop])
-            await conectionRedis.saveInRedis(keyRedis, hashValue)
-        } catch (error) {
-            console.error('User.saveHashInRedis:', error)
-        }
-    }
-    /**
-     * Compara el hash de una propiedad del usuario con los valores almacenados en Redis.
-     * Es decir, no le pasas directamente el valor puesto que el valor utilizado internamente es el instanciado en esta clase,
-     * por tanto, solo se pasa la propiedad que tiene el valor.
-     * 
-     * @param keyRedis - Clave en Redis donde se almacenan los hashes.
-     * @param prop - Propiedad del usuario a comparar ('nombre', 'apellido', 'nombreUsuario', 'email').
-     * @returns - `true` si el hash existe en Redis, `false` si no existe, o `undefined` en caso de error.
-     */
-    async propUserCompareRedis(keyRedis: string, prop: 'nombre' | 'apellido' | 'nombreUsuario' | 'email') {
-        try {
-            const hashVal = this.hashFormation(this[prop])
-            return await conectionRedis.searchInRedis(keyRedis, hashVal)
-        } catch (error) {
-            console.error('User.propUserCompareRedis:', error)
-        }
-    }
-
 
     /**
      * Busca un usuario en la base de datos de mongo por una propiedad específica.
@@ -218,7 +171,8 @@ export default class User {
         User.validarApellido(this.apellido)
         User.validarNombreUsuario(this.nombreUsuario)
         //! Aquí se verifica que el nombre de usuario no exista ya en redis ⬇⬇
-        const searchUserNmRedis = await this.propUserCompareRedis('usernames', 'nombreUsuario')
+        const searchUserNmRedis = await UserRedis.searchStringsUserRedis(conectionRedis, 'nombreUsuario', this.nombreUsuario, 1)
+        console.log(__dirname, '\n', searchUserNmRedis)
 
         //Esto es para verificar en mongo si existe el nombre de usuario
         // const searchUserNmMongo = await User.buscarPorProps('nombreUsuario', this.nombreUsuario)
@@ -254,15 +208,6 @@ export default class User {
     }
 
 
-    /**
-     * Genera un hash a partir del nombre de usuario y lo guarda en caché
-     * a través de un callback (ej: uso con Redis).
-     */
-    async saveCacheHash(cb: CacheCallBack): Promise<void> {//!SOlO PARA PRUEBAS
-        const hash = this.hashFormation(this.nombreUsuario)
-        cb(hash)
-    }
-
 
     /**
      * 
@@ -275,7 +220,7 @@ export default class User {
         console.log(user)
         if (user) {
             this.compararPsw(user.password as string, password)
-            await conectionRedis.deleteInRedis('usernames', XXH.h32(user.nombreUsuario, seed).toString(16))
+            //* await conectionRedis.deleteInRedis('usernames', XXH.h32(user.nombreUsuario, seed).toString(16))
             await UserModel.deleteOne({ _id })
         }
     }
