@@ -32,6 +32,3 @@ export type LocalCitizens = {
     apellido: string,
     dni: number,
 }
-
-//Para clase User
-export type CacheCallBack = (hash: string) => void

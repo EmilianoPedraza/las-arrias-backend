@@ -5,7 +5,7 @@ import bcrypt from "bcrypt" // Para encriptar contraseñas
 import { validType, validarStringConExpresion } from "../../functions/functions" // Funciones de validación
 import { User as UserModel } from "../../models/usuario"; // Se renombra 'User' a 'UserModel' para evitar conflictos
 
-import { ClientUserType, UserType, CacheCallBack } from "../../types/users/userTyp";
+import { ClientUserType, UserType } from "../../types/users/userTyp";
 
 // import RedisCacheManager from "../../controllers/redisCacheManager";
 
