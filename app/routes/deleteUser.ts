@@ -23,10 +23,7 @@ deleteUserRoute.delete("/deleteuser", verifyAccessSuccessfulToken, (req, res) =>
     if (password && token) {
         const data = jsw.decode(token) as { [key: string]: any }
         User.deleteUser(password as string, data._id)
-        res.status(200).clearCookie('access_successful').json({
-            datosObtenidos: data,
-            psw: password
-        })
+        res.status(200).clearCookie('access_successful').clearCookie('access_token').json({ ok: true })
     }
 
 })
