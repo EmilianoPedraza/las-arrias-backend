@@ -226,7 +226,7 @@ export default class User {
 
     static async updateUser(user: UserType): Promise<void> {
         if (user) {
-            const user_ = await User.buscarPorProps(`_id`, user._id)
+            //const user_ = await User.buscarPorProps(`_id`, user._id)
 
         }
     }
