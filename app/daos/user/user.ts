@@ -6,8 +6,6 @@ import { validType, validarStringConExpresion } from "../../functions/functions"
 import { User as UserModel } from "../../models/usuario"; // Se renombra 'User' a 'UserModel' para evitar conflictos
 import { ClientUserType, UserType } from "../../types/users/userTyp";
 
-// import RedisCacheManager from "../../controllers/redisCacheManager";
-
 import { UserRedis, conectionRedis } from "../../controllers/redisCacheManager";
 import { validateEmail } from "../../functions/functions";
 
@@ -223,6 +221,13 @@ export default class User {
             await UserModel.deleteOne({ _id })
             await UserRedis.deleteKeyInRedis({ _id }, conectionRedis)
             // await UserRedis.deleteKeyInRedis()
+        }
+    }
+
+    static async updateUser(user: UserType): Promise<void> {
+        if (user) {
+            const user_ = await User.buscarPorProps(`_id`, user._id)
+
         }
     }
 }
