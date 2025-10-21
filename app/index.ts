@@ -27,16 +27,13 @@ import userChecks from "./routes/userChecks";
 
 
 
-// import test from "./testing/mookUsersRoute"; //*solo pruebas
+import test from "./testing/mookUsersRoute"; //*solo pruebas
 import deleteUserRoute from "./routes/deleteUser"; //! Falta que elimine ambos tokens, no solo uno
 //!
 
 
 
 export const app = express()
-//Creacion de servidor HTTP
-// const httpServer = createServer(app)
-// const io = new Server(httpServer)
 
 // Establecer conexión con la base de datos MongoDB Atlas: internamente ya se asegura de cargar las variables de entorno
 connectionMongo.connectIfRequired()
@@ -102,6 +99,6 @@ app.use('/admin', localCitizensRoutes)
 app.use('/', deleteUserRoute)
 
 
-// //!
-// app.use('/test', test)
-// //!
+//!
+app.use('/test', test)
+//!

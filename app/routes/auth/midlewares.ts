@@ -85,6 +85,7 @@ const verifyAccesToken = (req: Request, res: Response, next: NextFunction) => {
  * @returns Respuesta con error 401 si no hay token válido.
  */
 const verifyAccessSuccessfulToken = (req: Request, res: Response, next: NextFunction) => {
+    console.log('verifyAccesSuccessfulToken:', __dirname)
     const token = req.signedCookies?.access_successful;
     if (!token) {
         res.status(401).json({ error: 'token no encontrado: usuario invalido' });

@@ -4,7 +4,6 @@ import { UserError } from "./errors/userError" // Clase de error personalizada e
 import bcrypt from "bcrypt" // Para encriptar contraseñas
 import { validType, validarStringConExpresion } from "../../functions/functions" // Funciones de validación
 import { User as UserModel } from "../../models/usuario"; // Se renombra 'User' a 'UserModel' para evitar conflictos
-
 import { ClientUserType, UserType } from "../../types/users/userTyp";
 
 // import RedisCacheManager from "../../controllers/redisCacheManager";
@@ -222,6 +221,8 @@ export default class User {
             this.compararPsw(user.password as string, password)
             //* await conectionRedis.deleteInRedis('usernames', XXH.h32(user.nombreUsuario, seed).toString(16))
             await UserModel.deleteOne({ _id })
+            await UserRedis.deleteKeyInRedis({ _id }, conectionRedis)
+            // await UserRedis.deleteKeyInRedis()
         }
     }
 }

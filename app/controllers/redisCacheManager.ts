@@ -47,6 +47,20 @@ type UserRedisType = {
     apellido: string,
     __t: string
 }
+
+
+
+
+
+type UserDelete = {
+    nombre: string
+    _id: string
+} | {
+    apellido: string,
+    _id: string,
+} | { nombreUsuario: string } | { _id: string }
+
+
 const seed = 0xABCD // Semilla para el hash
 export class UserRedis {
     static hashFormation(stringForHash: string): string { return XXH.h32(stringForHash, seed).toString(16) }
@@ -89,8 +103,8 @@ export class UserRedis {
             //    Se crea una "clave" (key) única para Redis que representa cada campo del usuario,
             //    aplicando un hash al valor original. Esto evita exponer datos sensibles o repetidos.
             //    El formato final es: "campo:hash(valor)"
-            const serial_nombre = `nombre:${UserRedis.hashFormation(nombre)}`
-            const serial_apellido = `apellido:${UserRedis.hashFormation(apellido)}`
+            const serial_nombre = `nombre:${UserRedis.hashFormation(nombre)} ${UserRedis.hashFormation(`${_id}`)}`
+            const serial_apellido = `apellido:${UserRedis.hashFormation(apellido)} ${UserRedis.hashFormation(`${_id}`)}`
             const serial_nombreUsuario = `nombreUsuario:${UserRedis.hashFormation(nombreUsuario)}`
             //almacenamiento en redis 
             await server.client
@@ -172,7 +186,7 @@ export class UserRedis {
      */
     static async searchHashUserRedis(_id: string, server: RedisCacheManager): Promise<Record<string, string> | false> {
         try {
-            await server.client.connect()
+            await server.connectRedis()
             const res = await server.client.hGetAll(`user:${_id}`)
             return res
         } catch (error) {
@@ -181,9 +195,38 @@ export class UserRedis {
         }
     }
 
+    static async deleteKeyInRedis(user: UserDelete, server: RedisCacheManager) {
+        await server.connectRedis()
+        if ('_id' in user) {
+            const serialId = UserRedis.hashFormation(user._id)
+            if ('_id' in user && 'nombre' in user) {
+                const serialName = UserRedis.hashFormation(user.nombre)
+                await server.client.del(`nombre:${serialName} ${serialId}`)
+
+            }
+            if ('_id' in user && 'apellido' in user) {
+                const serialLastName = UserRedis.hashFormation(user.apellido)
+                await server.client.del(`apellido:${serialLastName} ${serialId}`)
+            }
+            else {//si se pasa solo id se busca en redis, se obtiene nombre y todo lo demas de redis, y con eso se eliminan demas keys
+                const res = await server.client.hGetAll(`user:${user._id}`)
+                const serialLastName = UserRedis.hashFormation(res.apellido)
+                const serialName = UserRedis.hashFormation(res.nombre)
+                const serialUserName = UserRedis.hashFormation(res.nombreUsuario)
+                await server.client.del(`nombre:${serialName} ${serialId}`)
+                await server.client.del(`apellido:${serialLastName} ${serialId}`)
+                await server.client.del(`nombreUsuario:${serialUserName}`)
+                await server.client.del(`user:${user._id}`)
+            }
+        }
+        if ('nombreUsuario' in user) {
+            const serialUserName = UserRedis.hashFormation(user.nombreUsuario)
+            await server.client.del(`nombreUsuario:${serialUserName}`)
+        }
+    }
+
+
 }
-
-
 
 
 

@@ -4,10 +4,12 @@ import { Faker, es } from '@faker-js/faker';// Librería para generar datos fals
 import bcrypt from "bcrypt"; // Librería para encriptar contraseñas
 
 import { LocalUser } from "../models/usuario";//Modelo de datos de usuario local
-import conectionRedis from "../controllers/redisCacheManager";//Clase para manejar Redis
+import { conectionRedis } from "../controllers/redisCacheManager";//Clase para manejar Redis
 import localUser from "../daos/user/localUser/localUser";
 import { LocalUsersArray } from "../types/mookUsersRouteTyp";
 import { UserError } from "../daos/user/errors/userError";
+import { Types } from "mongoose";
+import { UserRedis } from "../controllers/redisCacheManager";
 
 //* Se define el router principal de pruebas
 const testingRoute = Router();
@@ -163,8 +165,6 @@ testingRoute.get('/secuential', async (req, res) => {
 
     const cant = parseInt(req.query.cant as string);
 
-    const cacheRedisOk = await conectionRedis.connectRedis(); // True/false si Redis conecta bien
-
     for (let i = 0; i <= cant; i++) {
         const user = await createUser('simple'); // Usuario sin password encriptada
         const { nombre, apellido, dni, nombreUsuario, email, password } = user;
@@ -173,15 +173,15 @@ testingRoute.get('/secuential', async (req, res) => {
 
         let ok = true;
         try {
+            const newId = new Types.ObjectId()
             await userReg.validateRegisterUser(); // Valida datos de registro
             await userReg.validateLocalUser(); // Valida reglas propias de usuario local
             await userReg.encriptarPsw(); // Encripta password
-            await userReg.guardarNuevoLocalUser(); // Guarda en Mongo
+            await userReg.guardarNuevoLocalUser(newId); // Guarda en Mongo
 
             // Guarda hash en Redis si Redis está conectado
-            await userReg.saveCacheHash(async (hash: string) => {
-                cacheRedisOk && await conectionRedis.saveInRedis('usernames', hash);
-            });
+            await UserRedis.saveHashUser({ nombre, apellido, nombreUsuario, _id: newId, email, __t: 'LocalUser' }, conectionRedis)
+            await UserRedis.saveSetUser({ nombre, apellido, nombreUsuario, _id: newId, email, __t: 'LocalUser' }, conectionRedis)
         } catch (er) {
             // Manejo de errores personalizados
             er instanceof UserError && (usersErrors.push({ nombreUsuario, error: er.message }));
