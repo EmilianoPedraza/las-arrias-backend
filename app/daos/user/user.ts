@@ -6,12 +6,32 @@ import { validType, validarStringConExpresion } from "../../functions/functions"
 import { User as UserModel } from "../../models/usuario"; // Se renombra 'User' a 'UserModel' para evitar conflictos
 import { ClientUserType, UserType } from "../../types/users/userTyp";
 
+import { Model, ObjectId, Types } from "mongoose"
+
 import { UserRedis, conectionRedis } from "../../controllers/redisCacheManager";
 import { validateEmail } from "../../functions/functions";
+
+
+
 
 // Carga las variables de entorno 
 loadEnvironmentVars()
 const { FIRST_AND_LASTNAME, VALID_USERNAME, VALID_PASSWORD, VALID_EMAIL } = environmentVars()
+
+
+
+type UpdateUser = {
+    nombre?: string;
+    apellido?: string;
+    nombreUsuario?: string;
+    email?: string;
+    dni?: number;
+    telefono?: number;
+}
+
+
+
+
 
 /**
  * Clase base User que representa a un usuario del sistema.
@@ -224,10 +244,14 @@ export default class User {
         }
     }
 
-    static async updateUser(user: UserType): Promise<void> {
+    static async updateUser(_id: Types.ObjectId, user: UpdateUser, model: Model<unknown>): Promise<void> {
         if (user) {
-            //const user_ = await User.buscarPorProps(`_id`, user._id)
-
+            try {
+                await model.findByIdAndUpdate(_id, { ...user })
+                await UserRedis.updateDataUser(_id, user, conectionRedis)
+            } catch (error) {
+                console.log('User-Error-updateUser():', error)
+            }
         }
     }
 }

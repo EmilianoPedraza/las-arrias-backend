@@ -49,6 +49,15 @@ type UserRedisType = {
 }
 
 
+type UserRedisUpdateType = {
+    nombreUsuario?: string,
+    nombre?: string,
+    apellido?: string,
+    email?: string,
+    __t?: string
+}
+
+
 
 
 
@@ -199,11 +208,11 @@ export class UserRedis {
         await server.connectRedis()
         if ('_id' in user) {
             const serialId = UserRedis.hashFormation(user._id)
-            if ('_id' in user && 'nombre' in user) {
+            if ('_id' in user && 'nombre' in user) {//en caso de solo querer eliminar el campo nombre
                 const serialName = UserRedis.hashFormation(user.nombre)
                 await server.client.del(`nombre:${serialName} ${serialId}`)
 
-            }
+            }//en caso de solo querer eliminar el campo apellido
             if ('_id' in user && 'apellido' in user) {
                 const serialLastName = UserRedis.hashFormation(user.apellido)
                 await server.client.del(`apellido:${serialLastName} ${serialId}`)
@@ -219,14 +228,49 @@ export class UserRedis {
                 await server.client.del(`user:${user._id}`)
             }
         }
-        if ('nombreUsuario' in user) {
+        if ('nombreUsuario' in user) {//en caso de querer eliminar solo el campo username
             const serialUserName = UserRedis.hashFormation(user.nombreUsuario)
             await server.client.del(`nombreUsuario:${serialUserName}`)
         }
     }
 
 
+
+    static async updateDataUser(_id: mongoose.Types.ObjectId, user: UserRedisUpdateType, server: RedisCacheManager) {
+        await server.connectRedis()
+        const hash_id = UserRedis.hashFormation(`${_id}`)
+        if (user && _id) {
+            const oldUserHash = await UserRedis.searchHashUserRedis(`${_id}`, server)
+
+            //? Si no se encontró el hash en Redis, salir para evitar indexar 'false'
+            if (!oldUserHash) {
+                console.log(`UserRedis: no hash found for user:${_id}`)
+                return
+            }
+
+
+            //?modificacion en set
+            const props = Object.keys(user) as (keyof UserRedisUpdateType)[]//props en array 
+            for (const prop of props) {
+                const newVal = user[prop]
+                await server.client.hSet(`user:${_id}`, `${prop}`, `${newVal}`);//modifica en hashes
+                if (prop === 'apellido' || prop === 'nombre') {
+                    const oldKey = `${prop}:${UserRedis.hashFormation(oldUserHash[prop])} ${hash_id}`
+                    const newKEy = `${prop}:${UserRedis.hashFormation(newVal as string)} ${hash_id}`
+                    await server.client.rename(oldKey, newKEy)//modifica en cadenas
+                }
+                else if (prop === 'nombreUsuario') {
+                    const oldKey = `nombreUsuario:${UserRedis.hashFormation(oldUserHash[prop])}`
+                    const newKEy = `nombreUsuario:${UserRedis.hashFormation(newVal as string)}`
+                    await server.client.rename(oldKey, newKEy)//modifica en cadenas
+                }
+            }
+        }
+    }
+
+
 }
+
 
 
 

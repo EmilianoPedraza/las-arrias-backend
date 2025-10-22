@@ -21,11 +21,7 @@ import logout from "./routes/logout"
 import userChecks from "./routes/userChecks";
 
 //!
-// Para implementar socket Io
-// import { Server } from "socket.io"
-// import { createServer } from "http"
-
-
+import userUpdate from "./routes/updateUser";
 
 import test from "./testing/mookUsersRoute"; //*solo pruebas
 import deleteUserRoute from "./routes/deleteUser"; //! Falta que elimine ambos tokens, no solo uno
@@ -100,5 +96,8 @@ app.use('/', deleteUserRoute)
 
 
 //!
+//ruta para modificacion de datos de usuario
+app.use('/', userUpdate)
+
 app.use('/test', test)
 //!
