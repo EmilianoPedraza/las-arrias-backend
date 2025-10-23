@@ -2,7 +2,7 @@
 //Modelo localUser 
 import { LocalUser } from "../../../models/usuario";
 //Tipos de local user
-import { LocalUserType, ClientLocalUserType } from "../../../types/users/localUsersTyp";
+// import { LocalUserType, ClientLocalUserType } from "../../../types/users/localUsersTyp";
 //Modulo de errores personalizados
 import { UserError } from "../errors/userError";
 //Función que permite validar el tipo de dato de una variable
