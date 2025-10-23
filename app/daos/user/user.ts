@@ -6,7 +6,7 @@ import { validType, validarStringConExpresion } from "../../functions/functions"
 import { User as UserModel } from "../../models/usuario"; // Se renombra 'User' a 'UserModel' para evitar conflictos
 import { ClientUserType, UserType } from "../../types/users/userTyp";
 
-import { Model, ObjectId, Types } from "mongoose"
+import { Model, Types } from "mongoose"
 
 import { UserRedis, conectionRedis } from "../../controllers/redisCacheManager";
 import { validateEmail } from "../../functions/functions";
@@ -25,7 +25,6 @@ type UpdateUser = {
     apellido?: string;
     nombreUsuario?: string;
     email?: string;
-    dni?: number;
     telefono?: number;
 }
 
@@ -189,10 +188,8 @@ export default class User {
         User.validarNombreUsuario(this.nombreUsuario)
         //! Aquí se verifica que el nombre de usuario no exista ya en redis ⬇⬇
         const searchUserNmRedis = await UserRedis.searchStringsUserRedis(conectionRedis, 'nombreUsuario', this.nombreUsuario, 1)
-        console.log(__dirname, '\n', searchUserNmRedis)
-
-        //Esto es para verificar en mongo si existe el nombre de usuario
-        // const searchUserNmMongo = await User.buscarPorProps('nombreUsuario', this.nombreUsuario)
+        //?Esto es para verificar en mongo si existe el nombre de usuario
+        //? const searchUserNmMongo = await User.buscarPorProps('nombreUsuario', this.nombreUsuario)
 
         if (searchUserNmRedis) {
             throw new UserError('El nombre de usuario ya existe en la base de datos', "Unauthorized")
@@ -237,20 +234,35 @@ export default class User {
         console.log(user)
         if (user) {
             this.compararPsw(user.password as string, password)
-            //* await conectionRedis.deleteInRedis('usernames', XXH.h32(user.nombreUsuario, seed).toString(16))
             await UserModel.deleteOne({ _id })
             await UserRedis.deleteKeyInRedis({ _id }, conectionRedis)
             // await UserRedis.deleteKeyInRedis()
         }
     }
 
-    static async updateUser(_id: Types.ObjectId, user: UpdateUser, model: Model<unknown>): Promise<void> {
+    static async updateUser(_id: Types.ObjectId, user: UpdateUser, model: Model<unknown>): Promise<void | boolean> {
         if (user) {
-            try {
-                await model.findByIdAndUpdate(_id, { ...user })
-                await UserRedis.updateDataUser(_id, user, conectionRedis)
-            } catch (error) {
-                console.log('User-Error-updateUser():', error)
+
+            if (_id) {
+                if (user.nombre) User.validarNombre(user.nombre);
+                if (user.apellido) User.validarApellido(user.apellido);
+                if (user.nombreUsuario) {
+                    User.validarNombreUsuario(user.nombreUsuario)
+                    const searchUserNmRedis = await UserRedis.searchStringsUserRedis(conectionRedis, 'nombreUsuario', user.nombreUsuario, 1)
+                    if (searchUserNmRedis) throw new UserError('El nombre de usuario ya existe en la base de datos', "Unauthorized");
+                }
+                if (user.email) {
+                    User.validarEmail(user.email)
+                    if (await User.buscarPorProps('email', user.email)) {
+                        throw new UserError('El email ya existe en la base de datos', "Unauthorized")
+                    }
+                };
+                try {
+                    await model.findByIdAndUpdate(_id, { ...user, actualizadoEn: Date.now() })
+                    await UserRedis.updateDataUser(_id, user, conectionRedis)
+                } catch (error) {
+                    console.log('error al intentar guardar los datos')
+                }
             }
         }
     }

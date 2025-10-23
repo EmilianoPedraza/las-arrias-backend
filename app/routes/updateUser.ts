@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import { RequestConToken } from '../types/tokens/accessTyps'
 import jsw from 'jsonwebtoken'
 import User from '../daos/user/user'
+import { UserError } from '../daos/user/errors/userError'
 
 import { LocalUser } from '../models/usuario'
 
@@ -19,13 +20,21 @@ userUpdate.use(cookieParser(SECRET_LOG_ACCES_TOKEN))
 
 
 //en el body se encuentran los datos nuevos a actualizar
-userUpdate.put('/updateuser', verifyAccessSuccessfulToken, (req, res) => {
+userUpdate.put('/updateuser', verifyAccessSuccessfulToken, async (req, res) => {
     const token = (req as RequestConToken).userToken
-    const data = jsw.decode(token) as { [key: string]: any }
-    const { _id } = data
-    const updateData = { ...req.body }
-    User.updateUser(_id, updateData, LocalUser)
-    res.send('ok')
+    try {
+        const data = jsw.decode(token) as { [key: string]: any }
+        const { _id } = data
+        const updateData = { ...req.body }
+        await User.updateUser(_id, updateData, LocalUser)
+        res.status(200).json({ ok: true })
+    } catch (error) {
+        if (error instanceof UserError) {
+            res.status(error.status).json({ error: error.type, message: error.message })
+            return
+        }
+        res.status(200).json({ ok: false, error: error })
+    }
 })
 
 

@@ -140,6 +140,7 @@ export class UserRedis {
      * Es útil cuando no se conoce el valor exacto de la clave, pero sí el tipo de campo 
      * (por ejemplo, `nombre`, `apellido`, `nombreUsuario`) y el valor original 
      * antes de ser hasheado.
+     * El metodo realiza el hasheo en caso de ser necesario de forma automatica.
      * @param {RedisCacheManager} server - Instancia del manejador Redis encargado de la conexión.
      * @param {'nombre' | 'apellido' | 'nombreUsuario'} campo - Campo base del patrón de búsqueda.
      * @param {string} value - Valor original a buscar (será hasheado antes de comparar).
@@ -152,8 +153,10 @@ export class UserRedis {
         try {
             await server.connectRedis()// Asegura que la conexión con Redis esté activa antes de buscar
             const hashValue = UserRedis.hashFormation(value)// Hashea el valor de búsqueda para mantener coherencia con cómo se almacenan los datos
+            console.log('hash nombreUsuario:', hashValue)
             const toSearch = `${campo}:${hashValue}`// Forma el patrón de búsqueda, por ejemplo: "nombre:HASH" o "apellido:HASH"
             let cursor: number | string = 0 // Inicializa el cursor en 0 (como exige SCAN en Redis)
+            let response: string[] | undefined
 
             // Bucle de escaneo: recorre Redis en “páginas” hasta encontrar lo que busca o llegar al final
             do {
@@ -162,12 +165,13 @@ export class UserRedis {
                 // Actualiza el cursor con el valor devuelto; si es "0", significa que ya terminó el recorrido
                 cursor = res.cursor
                 // Si encontró más claves que el límite establecido, las devuelve inmediatamente
-                if (res.keys.length > max) {
-                    return res.keys
+                if (res.keys.length >= max) {
+                    response = res.keys
+                    break
                 }
-
                 // Mientras el cursor no vuelva a 0, sigue recorriendo Redis
             } while (Number(cursor) != 0);
+            if (response && response.length >= 1) return response;
             return false
         } catch (error) {
             // Si ocurre algún error, se muestra en consola y se devuelve un arreglo vacío
@@ -176,7 +180,10 @@ export class UserRedis {
         }
     }
 
-
+    static async getValueKeyString(key: string, server: RedisCacheManager) {
+        const res = await server.client.get(key)
+        res ? res : false
+    }
 
     /**
      * Recupera la información completa de un usuario almacenada como Hash en Redis.
@@ -235,37 +242,70 @@ export class UserRedis {
     }
 
 
+    /**
+     * Actualiza los datos de un usuario almacenado en Redis.
+     * 
+     * Este método se utiliza para sincronizar cambios en los datos de un usuario que ya existe en el sistema.
+     * Realiza una actualización sobre los campos internos del Hash del usuario (`user:{_id}`), y además,
+     * actualiza las claves relacionadas (como nombre, apellido o nombreUsuario) que funcionan como índices secundarios
+     * para búsquedas rápidas dentro de Redis.
+     * 
+     * Flujo general:
+     * 1. Conecta al servidor Redis (si no está conectado).
+     * 2. Genera un hash único del `_id` del usuario.
+     * 3. Busca el hash actual del usuario en Redis.
+     * 4. Si no se encuentra, detiene la ejecución (evita sobreescribir datos inexistentes).
+     * 5. Itera sobre las propiedades que deben actualizarse:
+     *    - Actualiza el campo dentro del Hash (`HSET`).
+     *    - Si el campo es `nombre`, `apellido` o `nombreUsuario`, actualiza las claves asociadas con `RENAME`,
+     *      garantizando consistencia en los índices secundarios.
+     * 
+     * En resumen, este método mantiene sincronizados los datos del usuario en Redis sin perder las referencias
+     * necesarias para búsquedas y acceso rápido.
+     * 
+     * @param _id ID del usuario (ObjectId de MongoDB)
+     * @param user Objeto con los campos a actualizar (UserRedisUpdateType)
+     * @param server Instancia del manejador de caché (RedisCacheManager)
+     * @returns true | false
+     */
+    static async updateDataUser(_id: mongoose.Types.ObjectId, user: UserRedisUpdateType, server: RedisCacheManager): Promise<boolean> {
+        try {
+            await server.connectRedis()
+            const hash_id = UserRedis.hashFormation(`${_id}`)
+            if (user && _id) {
+                const oldUserHash = await UserRedis.searchHashUserRedis(`${_id}`, server)
 
-    static async updateDataUser(_id: mongoose.Types.ObjectId, user: UserRedisUpdateType, server: RedisCacheManager) {
-        await server.connectRedis()
-        const hash_id = UserRedis.hashFormation(`${_id}`)
-        if (user && _id) {
-            const oldUserHash = await UserRedis.searchHashUserRedis(`${_id}`, server)
-
-            //? Si no se encontró el hash en Redis, salir para evitar indexar 'false'
-            if (!oldUserHash) {
-                console.log(`UserRedis: no hash found for user:${_id}`)
-                return
-            }
-
-
-            //?modificacion en set
-            const props = Object.keys(user) as (keyof UserRedisUpdateType)[]//props en array 
-            for (const prop of props) {
-                const newVal = user[prop]
-                await server.client.hSet(`user:${_id}`, `${prop}`, `${newVal}`);//modifica en hashes
-                if (prop === 'apellido' || prop === 'nombre') {
-                    const oldKey = `${prop}:${UserRedis.hashFormation(oldUserHash[prop])} ${hash_id}`
-                    const newKEy = `${prop}:${UserRedis.hashFormation(newVal as string)} ${hash_id}`
-                    await server.client.rename(oldKey, newKEy)//modifica en cadenas
+                //? Si no se encontró el hash en Redis, salir para evitar indexar 'false'
+                if (!oldUserHash) {
+                    console.log(`UserRedis: no hash found for user:${_id}`)
+                    return false
                 }
-                else if (prop === 'nombreUsuario') {
-                    const oldKey = `nombreUsuario:${UserRedis.hashFormation(oldUserHash[prop])}`
-                    const newKEy = `nombreUsuario:${UserRedis.hashFormation(newVal as string)}`
-                    await server.client.rename(oldKey, newKEy)//modifica en cadenas
+
+
+                //?modificacion en set
+                const props = Object.keys(user) as (keyof UserRedisUpdateType)[]//props en array 
+                for (const prop of props) {
+                    const newVal = user[prop]
+                    await server.client.hSet(`user:${_id}`, `${prop}`, `${newVal}`);//modifica en hashes
+                    if (prop === 'apellido' || prop === 'nombre') {
+                        const oldKey = `${prop}:${UserRedis.hashFormation(oldUserHash[prop])} ${hash_id}`
+                        const newKEy = `${prop}:${UserRedis.hashFormation(newVal as string)} ${hash_id}`
+                        await server.client.rename(oldKey, newKEy)//modifica en cadenas
+                    }
+                    else if (prop === 'nombreUsuario') {
+                        const oldKey = `nombreUsuario:${UserRedis.hashFormation(oldUserHash[prop])}`
+                        const newKEy = `nombreUsuario:${UserRedis.hashFormation(newVal as string)}`
+                        await server.client.rename(oldKey, newKEy)//modifica en cadenas
+                    }
                 }
+                return true
             }
+            return false
+        } catch (error) {
+            console.log('UserRedis-UpdateDataUser:', error)
+            return false
         }
+
     }
 
 

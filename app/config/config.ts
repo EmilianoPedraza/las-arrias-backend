@@ -52,8 +52,10 @@ export const environmentVars = () => {
     const METHODS = ['GET', 'POST', 'PUT', 'DELETE']
     const CREDENTIALS = true
 
+    const FIRST_AND_LASTNAME = "^(?!.*\\s{2})[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}(?:\\s[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}){0,2}$"
+    //? const FIRST_AND_LASTNAME = !isDev ? "^(?!.*\\s{2})[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}(?:\\s[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}){0,2}$" : ''
 
-    const FIRST_AND_LASTNAME = !isDev ? "^(?!.*\\s{2})[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}(?:\\s[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}){0,2}$" : ''
+
     // const VALID_EMAIL = "^[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$"
     const VALID_EMAIL = "^(?=.{1,254}$)(?=[^@]{1,64}@)[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$"
     const VALID_USERNAME = "^(?!.*\\.\\.)(?!.*_\\.)(?!.*\\._)[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9](?:[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9_.]*(?:\\.[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9])?)*$"

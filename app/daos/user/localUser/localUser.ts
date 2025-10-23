@@ -12,6 +12,18 @@ import { LocalCitizensClass } from "../../ciudadanosLocales/ciudadanosLocales";
 import { UserRedis, conectionRedis } from "../../../controllers/redisCacheManager";
 import User from "../user";//clase de la cual se extiende
 import { Types } from "mongoose";
+
+
+type UpdateUser = {
+    nombre?: string;
+    apellido?: string;
+    nombreUsuario?: string;
+    email?: string;
+    telefono?: number;
+}
+
+
+
 /**
  * Clase que representa a un usuario local, heredando de la clase base User.
  * 
@@ -132,19 +144,30 @@ export default class localUser extends User {
      * - Compara la contraseña provista con la almacenada.
      * - Retorna datos esenciales del usuario si la autenticación es exitosa.
      */
-    static async loginLocalUser(nombreUser: string, password: string): Promise<ClientLocalUserType> {
-        User.validarNombreUsuario(nombreUser) // Validar formato de nombre de usuario
-        User.validarPassword(password) // Validar formato de contraseña
+    // static async loginLocalUser(nombreUser: string, password: string): Promise<ClientLocalUserType> {
+    //     User.validarNombreUsuario(nombreUser) // Validar formato de nombre de usuario
+    //     User.validarPassword(password) // Validar formato de contraseña
 
-        const user = await User.buscarPorProps('nombreUsuario', nombreUser) as LocalUserType // Buscar usuario
-        if (!user) {
-            throw new UserError('El campo nombreUsuario no existe', "BadRequest");
-        }
+    //     const user = await User.buscarPorProps('nombreUsuario', nombreUser) as LocalUserType // Buscar usuario
+    //     // const user_ = await UserRedis.searchStringsUserRedis(conectionRedis, 'nombreUsuario', nombreUser, 1)
+    //     // console.log('usuario en redis:', user_)
+    //     if (!user) {
+    //         throw new UserError('El campo nombreUsuario no existe', "BadRequest");
+    //     }
 
-        if (await User.compararPsw(user.password, password)) { // Comparar contraseñas
-            const { _id, nombre, apellido, nombreUsuario, email, telefono, dni } = user
-            return { _id, nombre, apellido, nombreUsuario, email, telefono, dni }
+    //     if (await User.compararPsw(user.password, password)) { // Comparar contraseñas
+    //         const { _id, nombre, apellido, nombreUsuario, email, telefono, dni } = user
+    //         return { _id, nombre, apellido, nombreUsuario, email, telefono, dni }
+    //     }
+    //     throw new UserError('Contraseña incorrecta', 'Unauthorized');
+    // }
+
+    static async updateLocalUser(user: UpdateUser) {
+        try {
+            if (user.telefono && !validType(user.telefono, 'number')) throw new UserError('El Número de telefono no es un tipo de dato valido', "BadRequest"); // Validar tipo de teléfono si existe
+
+        } catch (error) {
+
         }
-        throw new UserError('Contraseña incorrecta', 'Unauthorized');
     }
 }
