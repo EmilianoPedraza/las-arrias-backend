@@ -20,13 +20,14 @@ import login from "./routes/login/login";
 import logout from "./routes/logout"
 import userChecks from "./routes/userChecks";
 
+import deleteUserRoute from "./routes/deleteUser";
 //!
 import userUpdate from "./routes/updateUser";
 
 import test from "./testing/mookUsersRoute"; //*solo pruebas
-import deleteUserRoute from "./routes/deleteUser"; //! Falta que elimine ambos tokens, no solo uno
-//!
 
+import { prueba } from "./controllers/socketManager";
+//!
 
 
 export const app = express()
@@ -48,6 +49,10 @@ server.on("error", error => {
     console.error("Error al intentar levantar el servidor:\n", error)
 })
 
+//!
+//sockets
+prueba()
+//!
 
 // Middleware de desarrollo: mide el tiempo de respuesta de cada solicitud HTTP
 if (isDev) {
