@@ -20,19 +20,53 @@ class SocketManager {
 
 
 
-
-
 class SocketUsersEvents {
     public static verifyUsernames(socket: SocketTypeParam) {
+        //es una coneccion habierta para verificar nombres de usuario, se utiliza para validaciones en tiempo real al registrar nuevos usuarios
         socket.on('client:searchUsername', async (username: string) => {
-            console.log('me ejecute', username)
             //falta validar caracteres que se ingresan
             const searchResult = await UserRedis.searchStringsUserRedis(conectionRedis, "nombreUsuario", username, 1)
             socket.emit('server:searchUsernameRespose', (searchResult ? true : false))
         })
     }
+
+
+
+
+    public static listUsers(socket: SocketTypeParam) {
+        //esta coneccion requerira de validacion de token para ser utulizada
+        socket.on('client:searchListUsers', async (/*{ options: listUserOptions }*/) => {
+            socket.emit('server:listUsernamesResponse', 'ok')
+            // for (let key in listUserOptions) {
+
+
+            // }
+            // const searchResult = await UserRedis.searchStringsUserRedis(conectionRedis, "nombreUsuario", listUserOptions.name, cant)
+
+        })
+    }
 }
 
+
+
+
+
+
+const dataopen = () => {
+    //sockets
+    const socketServer = new SocketManager()//coneccion
+    const { socket: so } = socketServer
+    // Iniciar el servidor en el puerto 8080
+    socketServer.httpServer.listen(8030, () => {
+        console.log('Servidor WebSocket escuchando en http://localhost:8080')
+    })
+    so.on('connection', async (socket) => {
+        SocketUsersEvents.verifyUsernames(socket)
+        SocketUsersEvents.listUsers(socket)
+    })
+
+
+}
 
 
 
@@ -110,27 +144,6 @@ class SocketProyectsEvents {
 
 
 
-
-
-const prueba = () => {
-    //sockets
-    const socketServer = new SocketManager()//coneccion
-    const { socket: so } = socketServer
-    // Iniciar el servidor en el puerto 8080
-    socketServer.httpServer.listen(8030, () => {
-        console.log('Servidor WebSocket escuchando en http://localhost:8080')
-    })
-    so.on('connection', async (socket) => {
-        console.log('Hola desde el servidor', socket.id)
-        SocketUsersEvents.verifyUsernames(socket)
-    })
-
-
-}
-
-
-
-
-export { SocketManager, SocketProyectsEvents, /*SocketUsersEvents,*/ prueba }
+export { SocketManager, SocketProyectsEvents, /*SocketUsersEvents,*/ dataopen }
 
 

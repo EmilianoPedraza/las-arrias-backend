@@ -26,7 +26,7 @@ import userUpdate from "./routes/updateUser";
 
 import test from "./testing/mookUsersRoute"; //*solo pruebas
 
-import { prueba } from "./controllers/socketManager";
+import { dataopen } from "./controllers/socketManager";
 //!
 
 
@@ -51,7 +51,7 @@ server.on("error", error => {
 
 //!
 //sockets
-prueba()
+dataopen()
 //!
 
 // Middleware de desarrollo: mide el tiempo de respuesta de cada solicitud HTTP

@@ -58,6 +58,11 @@ type UserRedisUpdateType = {
 }
 
 
+type searchUsersOptions = {
+    cant: number | string,
+    toSearch?: string,
+}
+
 
 
 
@@ -182,7 +187,7 @@ export class UserRedis {
 
     static async getValueKeyString(key: string, server: RedisCacheManager) {
         const res = await server.client.get(key)
-        res ? res : false
+        return res ? res : false
     }
 
     /**
@@ -305,7 +310,22 @@ export class UserRedis {
             console.log('UserRedis-UpdateDataUser:', error)
             return false
         }
+    }
 
+
+
+    public static searchUsers = async (options: searchUsersOptions, server: RedisCacheManager) => {
+        try {
+            await server.connectRedis()
+            const { cant, toSearch } = options
+            if (cant && toSearch) {
+
+
+            }
+        } catch (error) {
+            console.log('UserRedis-searchUsers:', error)
+            return false
+        }
     }
 
 
