@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { createClient } from "redis";
-
+import { normalizarString } from "../functions/functions"
 
 
 //----------------para UserRedis
@@ -66,15 +66,6 @@ type searchUsersOptions = {
 
 
 
-type UserDelete = {
-    nombre: string
-    _id: string
-} | {
-    apellido: string,
-    _id: string,
-} | { nombreUsuario: string } | { _id: string }
-
-
 const seed = 0xABCD // Semilla para el hash
 export class UserRedis {
     static hashFormation(stringForHash: string): string { return XXH.h32(stringForHash, seed).toString(16) }
@@ -109,16 +100,18 @@ export class UserRedis {
      * @param user - Objeto con los datos del usuario (UserRedisType).
      * @param server - Instancia del gestor de conexión a Redis (RedisCacheManager).
      */
-    static async saveSetUser(user: UserRedisType, server: RedisCacheManager) {
+    static async saveSetUser(user: UserRedisType, server: RedisCacheManager) {//*-------------------
         try {
             await server.connectRedis()//conecto a redis
-            const { nombreUsuario, nombre, apellido, _id } = user
+            const { nombreUsuario, nombre: no, apellido: ap, _id } = user
+            const nombre = normalizarString(no)//*serailizacion-todo mayuscula
+            const apellido = normalizarString(ap)//*serailizacion-todo mayuscula
             //    Serialización + hashing de cada campo.
             //    Se crea una "clave" (key) única para Redis que representa cada campo del usuario,
             //    aplicando un hash al valor original. Esto evita exponer datos sensibles o repetidos.
             //    El formato final es: "campo:hash(valor)"
-            const serial_nombre = `nombre:${UserRedis.hashFormation(nombre)} ${UserRedis.hashFormation(`${_id}`)}`
-            const serial_apellido = `apellido:${UserRedis.hashFormation(apellido)} ${UserRedis.hashFormation(`${_id}`)}`
+            const serial_nombre = `nombre:${UserRedis.hashFormation(nombre)}:${UserRedis.hashFormation(`${_id}`)}`
+            const serial_apellido = `apellido:${UserRedis.hashFormation(apellido)}:${UserRedis.hashFormation(`${_id}`)}`
             const serial_nombreUsuario = `nombreUsuario:${UserRedis.hashFormation(nombreUsuario)}`
             //almacenamiento en redis 
             await server.client
@@ -157,21 +150,27 @@ export class UserRedis {
     static async searchStringsUserRedis(server: RedisCacheManager, campo: 'nombre' | 'apellido' | 'nombreUsuario', value: string, max: number): Promise<string[] | false> {
         try {
             await server.connectRedis()// Asegura que la conexión con Redis esté activa antes de buscar
-            const hashValue = UserRedis.hashFormation(value)// Hashea el valor de búsqueda para mantener coherencia con cómo se almacenan los datos
-            console.log('hash nombreUsuario:', hashValue)
-            const toSearch = `${campo}:${hashValue}`// Forma el patrón de búsqueda, por ejemplo: "nombre:HASH" o "apellido:HASH"
+            const value_ = campo === 'nombre' || campo === 'apellido' ? normalizarString(value) : value //*normalizo o no dependiendo del campo
+            const hashValue = UserRedis.hashFormation(value_)// Hashea el valor de búsqueda para mantener coherencia con cómo se almacenan los datos
+            const toSearch = `${campo}:${hashValue}*`// Forma el patrón de búsqueda, por ejemplo: "nombre:HASH" o "apellido:HASH"
             let cursor: number | string = 0 // Inicializa el cursor en 0 (como exige SCAN en Redis)
-            let response: string[] | undefined
-
+            let response: string[] = []
+            //? COUNT proporcional al max, limitado a un máximo razonable (p. ej. 1000)
+            const count = Math.min(
+                Math.max(Math.ceil(max * 2), 10), // al menos 10, al máximo 1000
+                1000
+            )
             // Bucle de escaneo: recorre Redis en “páginas” hasta encontrar lo que busca o llegar al final
             do {
                 // SCAN recorre claves parcialmente, evitando bloquear Redis como haría KEYS
-                const res = await server.client.scan(String(cursor), { MATCH: toSearch, COUNT: 100 })
+                const res = await server.client.scan(String(cursor), { MATCH: toSearch, COUNT: count })
                 // Actualiza el cursor con el valor devuelto; si es "0", significa que ya terminó el recorrido
                 cursor = res.cursor
+                // Agrega las claves encontradas
+                response.push(...res.keys);
                 // Si encontró más claves que el límite establecido, las devuelve inmediatamente
-                if (res.keys.length >= max) {
-                    response = res.keys
+                if (response.length >= max) {
+                    response = response.slice(0, max);
                     break
                 }
                 // Mientras el cursor no vuelva a 0, sigue recorriendo Redis
@@ -185,10 +184,13 @@ export class UserRedis {
         }
     }
 
+
     static async getValueKeyString(key: string, server: RedisCacheManager) {
         const res = await server.client.get(key)
         return res ? res : false
     }
+
+
 
     /**
      * Recupera la información completa de un usuario almacenada como Hash en Redis.
@@ -216,33 +218,29 @@ export class UserRedis {
         }
     }
 
-    static async deleteKeyInRedis(user: UserDelete, server: RedisCacheManager) {
-        await server.connectRedis()
-        if ('_id' in user) {
-            const serialId = UserRedis.hashFormation(user._id)
-            if ('_id' in user && 'nombre' in user) {//en caso de solo querer eliminar el campo nombre
-                const serialName = UserRedis.hashFormation(user.nombre)
-                await server.client.del(`nombre:${serialName} ${serialId}`)
 
-            }//en caso de solo querer eliminar el campo apellido
-            if ('_id' in user && 'apellido' in user) {
-                const serialLastName = UserRedis.hashFormation(user.apellido)
-                await server.client.del(`apellido:${serialLastName} ${serialId}`)
-            }
-            else {//si se pasa solo id se busca en redis, se obtiene nombre y todo lo demas de redis, y con eso se eliminan demas keys
-                const res = await server.client.hGetAll(`user:${user._id}`)
-                const serialLastName = UserRedis.hashFormation(res.apellido)
-                const serialName = UserRedis.hashFormation(res.nombre)
-                const serialUserName = UserRedis.hashFormation(res.nombreUsuario)
-                await server.client.del(`nombre:${serialName} ${serialId}`)
-                await server.client.del(`apellido:${serialLastName} ${serialId}`)
-                await server.client.del(`nombreUsuario:${serialUserName}`)
-                await server.client.del(`user:${user._id}`)
-            }
-        }
-        if ('nombreUsuario' in user) {//en caso de querer eliminar solo el campo username
-            const serialUserName = UserRedis.hashFormation(user.nombreUsuario)
-            await server.client.del(`nombreUsuario:${serialUserName}`)
+
+
+    static async deleteKeyInRedis(_id: string, server: RedisCacheManager) {
+        await server.connectRedis()
+        if (_id) {
+            const serialId = UserRedis.hashFormation(_id)
+            //!si se pasa solo id se busca en redis, se obtiene nombre y todo lo demas de redis, y con eso se eliminan demas keys
+            const res = await server.client.hGetAll(`user:${_id}`)
+
+
+            const serialLastName = UserRedis.hashFormation(
+                normalizarString(res.apellido)//*normalizacion del apellido y luego se hashea
+            )
+            const serialName = UserRedis.hashFormation(
+                normalizarString(res.nombre)//*normalizacion del nombre y luego se hashea
+            )
+            const serialUserName = UserRedis.hashFormation(res.nombreUsuario)//*solo se hashea
+
+            await server.client.del(`nombre:${serialName}:${serialId}`)//?Se eliminan en cadenas
+            await server.client.del(`apellido:${serialLastName}:${serialId}`)//?Se eliminan en cadenas
+            await server.client.del(`nombreUsuario:${serialUserName}`)//?Se eliminan en cadenas
+            await server.client.del(`user:${_id}`)//?Se elimina en hashes
         }
     }
 
@@ -279,10 +277,8 @@ export class UserRedis {
             const hash_id = UserRedis.hashFormation(`${_id}`)
             if (user && _id) {
                 const oldUserHash = await UserRedis.searchHashUserRedis(`${_id}`, server)
-
                 //? Si no se encontró el hash en Redis, salir para evitar indexar 'false'
                 if (!oldUserHash) {
-                    console.log(`UserRedis: no hash found for user:${_id}`)
                     return false
                 }
 
@@ -290,17 +286,25 @@ export class UserRedis {
                 //?modificacion en set
                 const props = Object.keys(user) as (keyof UserRedisUpdateType)[]//props en array 
                 for (const prop of props) {
-                    const newVal = user[prop]
-                    await server.client.hSet(`user:${_id}`, `${prop}`, `${newVal}`);//modifica en hashes
+                    const newVal = user[prop];
+
+                    await server.client.hSet(`user:${_id}`, `${prop}`, `${newVal}`);//?modifica en hashes
+
+
                     if (prop === 'apellido' || prop === 'nombre') {
-                        const oldKey = `${prop}:${UserRedis.hashFormation(oldUserHash[prop])} ${hash_id}`
-                        const newKEy = `${prop}:${UserRedis.hashFormation(newVal as string)} ${hash_id}`
-                        await server.client.rename(oldKey, newKEy)//modifica en cadenas
+                        const oldKey = `${prop}:${UserRedis.hashFormation(
+                            normalizarString(oldUserHash[prop]))
+                            }:${hash_id}`
+                        const newKey = `${prop}:${UserRedis.hashFormation(
+                            normalizarString(newVal as string)//*normalizacion del nuevo nombre o apellido
+                        )}:${hash_id}`
+                        //* eliminar del set viejo y agregar al nuevo
+                        await server.client.rename(oldKey, newKey)
                     }
                     else if (prop === 'nombreUsuario') {
                         const oldKey = `nombreUsuario:${UserRedis.hashFormation(oldUserHash[prop])}`
-                        const newKEy = `nombreUsuario:${UserRedis.hashFormation(newVal as string)}`
-                        await server.client.rename(oldKey, newKEy)//modifica en cadenas
+                        const newKey = `nombreUsuario:${UserRedis.hashFormation(newVal as string)}`
+                        await server.client.rename(oldKey, newKey)
                     }
                 }
                 return true
@@ -314,19 +318,18 @@ export class UserRedis {
 
 
 
-    public static searchUsers = async (options: searchUsersOptions, server: RedisCacheManager) => {
-        try {
-            await server.connectRedis()
-            const { cant, toSearch } = options
-            if (cant && toSearch) {
+    // public static searchUsers = async (options: searchUsersOptions, server: RedisCacheManager) => {
+    //     try {
+    //         await server.connectRedis()
+    //         const { cant, toSearch } = options
+    //         if (cant && toSearch) {
 
-
-            }
-        } catch (error) {
-            console.log('UserRedis-searchUsers:', error)
-            return false
-        }
-    }
+    //         }
+    //     } catch (error) {
+    //         console.log('UserRedis-searchUsers:', error)
+    //         return false
+    //     }
+    // }
 
 
 }
@@ -334,7 +337,18 @@ export class UserRedis {
 
 
 
+/*
+Para buscar podria
+1-buscar de forma directa en usernames sin normalización.
 
+
+
+
+
+
+
+
+ */
 
 
 

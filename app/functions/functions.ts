@@ -41,6 +41,17 @@ const validateEmail = (email: string): boolean => {
     return validator.isEmail(email, options)
 }
 
-export { validType, validarNumEntero, validarStringConExpresion, validateEmail };
+
+/**
+ * Recibe una cadena de tipo string y la normaliza para que no contenga ningun espacio y simbolo que no sea letra.
+ */
+const normalizarString = (str: string) => str
+    .normalize("NFD")                  // separa los acentos de las letras
+    .replace(/[\u0300-\u036f]/g, "")  // elimina los acentos y diacríticos
+    .replace(/[^A-Z0-9]/gi, "")       // elimina cualquier carácter que no sea letra o número
+    .toUpperCase();                   // convierte todo a mayúsculas
+
+
+export { validType, validarNumEntero, validarStringConExpresion, validateEmail, normalizarString };
 
 

@@ -235,8 +235,7 @@ export default class User {
         if (user) {
             this.compararPsw(user.password as string, password)
             await UserModel.deleteOne({ _id })
-            await UserRedis.deleteKeyInRedis({ _id }, conectionRedis)
-            // await UserRedis.deleteKeyInRedis()
+            await UserRedis.deleteKeyInRedis(_id, conectionRedis)
         }
     }
 
