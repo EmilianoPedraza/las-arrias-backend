@@ -58,12 +58,6 @@ type UserRedisUpdateType = {
 }
 
 
-type searchUsersOptions = {
-    cant: number | string,
-    toSearch?: string,
-}
-
-
 
 
 const seed = 0xABCD // Semilla para el hash
@@ -147,7 +141,7 @@ export class UserRedis {
      * con el patrón, o un arreglo vacío si no se encuentra ninguna coincidencia o hay un error,
      *  o si no hay coincidencias un false.
      */
-    static async searchStringsUserRedis(server: RedisCacheManager, campo: 'nombre' | 'apellido' | 'nombreUsuario', value: string, max: number): Promise<string[] | false> {
+    static async searchKeySetUserRedis(server: RedisCacheManager, campo: 'nombre' | 'apellido' | 'nombreUsuario', value: string, max: number): Promise<string[] | false> {
         try {
             await server.connectRedis()// Asegura que la conexión con Redis esté activa antes de buscar
             const value_ = campo === 'nombre' || campo === 'apellido' ? normalizarString(value) : value //*normalizo o no dependiendo del campo
@@ -179,7 +173,7 @@ export class UserRedis {
             return false
         } catch (error) {
             // Si ocurre algún error, se muestra en consola y se devuelve un arreglo vacío
-            console.log('UserRedis-searchStringsUserRedis:', error)
+            console.log('UserRedis-deleteKeyInRedis:', error)
             return false
         }
     }
@@ -223,24 +217,31 @@ export class UserRedis {
 
     static async deleteKeyInRedis(_id: string, server: RedisCacheManager) {
         await server.connectRedis()
-        if (_id) {
-            const serialId = UserRedis.hashFormation(_id)
-            //!si se pasa solo id se busca en redis, se obtiene nombre y todo lo demas de redis, y con eso se eliminan demas keys
-            const res = await server.client.hGetAll(`user:${_id}`)
+        try {
+            if (_id) {
+                const serialId = UserRedis.hashFormation(_id)
+                //!si se pasa solo id se busca en redis, se obtiene nombre y todo lo demas de redis, y con eso se eliminan demas keys
+                const res = await server.client.hGetAll(`user:${_id}`)
 
 
-            const serialLastName = UserRedis.hashFormation(
-                normalizarString(res.apellido)//*normalizacion del apellido y luego se hashea
-            )
-            const serialName = UserRedis.hashFormation(
-                normalizarString(res.nombre)//*normalizacion del nombre y luego se hashea
-            )
-            const serialUserName = UserRedis.hashFormation(res.nombreUsuario)//*solo se hashea
+                const serialLastName = UserRedis.hashFormation(
+                    normalizarString(res.apellido)//*normalizacion del apellido y luego se hashea
+                )
+                const serialName = UserRedis.hashFormation(
+                    normalizarString(res.nombre)//*normalizacion del nombre y luego se hashea
+                )
+                const serialUserName = UserRedis.hashFormation(res.nombreUsuario)//*solo se hashea
 
-            await server.client.del(`nombre:${serialName}:${serialId}`)//?Se eliminan en cadenas
-            await server.client.del(`apellido:${serialLastName}:${serialId}`)//?Se eliminan en cadenas
-            await server.client.del(`nombreUsuario:${serialUserName}`)//?Se eliminan en cadenas
-            await server.client.del(`user:${_id}`)//?Se elimina en hashes
+                await server.client.del(`nombre:${serialName}:${serialId}`)//?Se eliminan en cadenas
+                await server.client.del(`apellido:${serialLastName}:${serialId}`)//?Se eliminan en cadenas
+                await server.client.del(`nombreUsuario:${serialUserName}`)//?Se eliminan en cadenas
+                await server.client.del(`user:${_id}`)//?Se elimina en hashes
+            }
+            return false
+
+        } catch (error) {
+            console.log('UserRedis-deleteKeyInRedis:', error)
+            return false
         }
     }
 
@@ -315,23 +316,6 @@ export class UserRedis {
             return false
         }
     }
-
-
-
-    // public static searchUsers = async (options: searchUsersOptions, server: RedisCacheManager) => {
-    //     try {
-    //         await server.connectRedis()
-    //         const { cant, toSearch } = options
-    //         if (cant && toSearch) {
-
-    //         }
-    //     } catch (error) {
-    //         console.log('UserRedis-searchUsers:', error)
-    //         return false
-    //     }
-    // }
-
-
 }
 
 

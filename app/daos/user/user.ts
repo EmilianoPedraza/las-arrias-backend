@@ -187,7 +187,7 @@ export default class User {
         User.validarApellido(this.apellido)
         User.validarNombreUsuario(this.nombreUsuario)
         //! Aquí se verifica que el nombre de usuario no exista ya en redis ⬇⬇
-        const searchUserNmRedis = await UserRedis.searchStringsUserRedis(conectionRedis, 'nombreUsuario', this.nombreUsuario, 1)
+        const searchUserNmRedis = await UserRedis.searchKeySetUserRedis(conectionRedis, 'nombreUsuario', this.nombreUsuario, 1)
         //?Esto es para verificar en mongo si existe el nombre de usuario
         //? const searchUserNmMongo = await User.buscarPorProps('nombreUsuario', this.nombreUsuario)
 
@@ -247,7 +247,7 @@ export default class User {
                 if (user.apellido) User.validarApellido(user.apellido);
                 if (user.nombreUsuario) {
                     User.validarNombreUsuario(user.nombreUsuario)
-                    const searchUserNmRedis = await UserRedis.searchStringsUserRedis(conectionRedis, 'nombreUsuario', user.nombreUsuario, 1)
+                    const searchUserNmRedis = await UserRedis.searchKeySetUserRedis(conectionRedis, 'nombreUsuario', user.nombreUsuario, 1)
                     if (searchUserNmRedis) throw new UserError('El nombre de usuario ya existe en la base de datos', "Unauthorized");
                 }
                 if (user.email) {

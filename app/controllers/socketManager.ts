@@ -23,9 +23,11 @@ class SocketManager {
 class SocketUsersEvents {
     public static verifyUsernames(socket: SocketTypeParam) {
         //es una coneccion habierta para verificar nombres de usuario, se utiliza para validaciones en tiempo real al registrar nuevos usuarios
-        socket.on('client:searchUsername', async (username: string) => {
+        socket.on('client:searchUsername', async ({ username }: { username: string }) => {
             //falta validar caracteres que se ingresan
-            const searchResult = await UserRedis.searchStringsUserRedis(conectionRedis, "nombreUsuario", username, 1)
+            console.log('Verificando nombre de usuario:', username)
+            const searchResult = await UserRedis.searchKeySetUserRedis(conectionRedis, "nombreUsuario", username, 1)
+            console.log('searchResult:', searchResult)
             socket.emit('server:searchUsernameRespose', (searchResult ? true : false))
         })
     }
@@ -53,6 +55,7 @@ class SocketUsersEvents {
 
 
 const dataopen = () => {
+    console.log("Iniciando servicio de WebSockets dataopen...")
     //sockets
     const socketServer = new SocketManager()//coneccion
     const { socket: so } = socketServer
@@ -61,8 +64,9 @@ const dataopen = () => {
         console.log('Servidor WebSocket escuchando en http://localhost:8080')
     })
     so.on('connection', async (socket) => {
-        SocketUsersEvents.verifyUsernames(socket)
-        SocketUsersEvents.listUsers(socket)
+        console.log('Nuevo cliente conectado:', socket.id)
+        await SocketUsersEvents.verifyUsernames(socket)
+        // SocketUsersEvents.listUsers(socket)
     })
 
 
