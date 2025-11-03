@@ -4,6 +4,17 @@ import { UserType } from "../users/userTyp";
 //actualmente implementado en access-successful.ts
 export type AccesToken = { _id: string, __t: string }
 
+
+export interface ReqSocket {
+    // cookies firmadas (cuando usas cookie-parser('<secret>'))
+    signedCookies?: {
+        accessSuccessful?: string; // aquí guarda el JWT
+        [key: string]: string | undefined;
+    };
+}
+
+
+
 export type UserAuthorizations = {
     createProjects: boolean
     getProyects: boolean

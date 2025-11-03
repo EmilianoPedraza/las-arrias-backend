@@ -26,11 +26,11 @@ import userUpdate from "./routes/updateUser";
 
 import test from "./testing/mookUsersRoute"; //*solo pruebas
 
-import { dataopen } from "./controllers/socketManager";
+import { SocketManager, SocketUsersEvents } from "./controllers/socketManager";
 //!
 
 
-export const app = express()
+const app = express()
 
 // Establecer conexión con la base de datos MongoDB Atlas: internamente ya se asegura de cargar las variables de entorno
 connectionMongo.connectIfRequired()
@@ -49,10 +49,7 @@ server.on("error", error => {
     console.error("Error al intentar levantar el servidor:\n", error)
 })
 
-//!
-//sockets
-dataopen()
-//!
+
 
 // Middleware de desarrollo: mide el tiempo de respuesta de cada solicitud HTTP
 if (isDev) {
@@ -106,3 +103,23 @@ app.use('/', userUpdate)
 
 app.use('/test', test)
 //!
+
+
+
+//?---------------------Sockets
+//sockets
+console.log("Iniciando servicio de WebSockets dataopen...")
+//sockets
+const socketServer = new SocketManager(server)//coneccion
+const { publicSocket, privateSocket } = socketServer
+//Iniciar el servidor en el puerto 8080
+//Eventos de coneccion publica
+publicSocket.on('connection', async (socket) => {
+    console.log('Nuevo cliente conectado:', socket.id)
+    await SocketUsersEvents.verifyUsernames(socket)
+    // SocketUsersEvents.listUsers(socket)
+})
+privateSocket.on('connection', (socket) => {
+    console.log('coneccion privada establecida:', socket.id)
+})
+//?

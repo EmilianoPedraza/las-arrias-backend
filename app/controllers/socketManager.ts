@@ -1,18 +1,26 @@
-import { Server, Socket, DefaultEventsMap } from "socket.io"
-import http from "http"
-import { app } from '../index'
-// import { UserType } from "../types/users/userTyp"
+
+// import cookieParser from "cookie-parser";
 import { UserRedis, conectionRedis } from "./redisCacheManager"
+import { verifyAccessSuccessfulTokenSocket } from "../socket/midlewares"
 
+import { Server, Namespace, DefaultEventsMap, Socket } from "socket.io";
+import { Server as HTTPServer } from "http";
 
-
-type SocketTypeParam = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 class SocketManager {
-    readonly httpServer: http.Server
-    readonly socket
-    constructor() {
-        this.httpServer = http.createServer(app)
-        this.socket = new Server(this.httpServer)
+    readonly socket: Server<DefaultEventsMap, DefaultEventsMap>;
+    readonly publicSocket: Namespace<DefaultEventsMap, DefaultEventsMap>;
+    readonly privateSocket: Namespace<DefaultEventsMap, DefaultEventsMap>;
+    constructor(server: HTTPServer) {
+        this.socket = new Server(server, {
+            cors: {
+                origin: "*",
+                credentials: true,
+            },
+        });
+
+        this.publicSocket = this.socket.of('/public');
+        this.privateSocket = this.socket.of('/private');
+        this.privateSocket.use(verifyAccessSuccessfulTokenSocket);
     }
 }
 
@@ -21,7 +29,7 @@ class SocketManager {
 
 
 class SocketUsersEvents {
-    public static verifyUsernames(socket: SocketTypeParam) {
+    public static verifyUsernames(socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
         //es una coneccion habierta para verificar nombres de usuario, se utiliza para validaciones en tiempo real al registrar nuevos usuarios
         socket.on('client:searchUsername', async ({ username }: { username: string }) => {
             //falta validar caracteres que se ingresan
@@ -35,13 +43,11 @@ class SocketUsersEvents {
 
 
 
-    public static listUsers(socket: SocketTypeParam) {
+    public static listUsers(socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
         //esta coneccion requerira de validacion de token para ser utulizada
         socket.on('client:searchListUsers', async (/*{ options: listUserOptions }*/) => {
             socket.emit('server:listUsernamesResponse', 'ok')
             // for (let key in listUserOptions) {
-
-
             // }
             // const searchResult = await UserRedis.searchStringsUserRedis(conectionRedis, "nombreUsuario", listUserOptions.name, cant)
 
@@ -51,26 +57,6 @@ class SocketUsersEvents {
 
 
 
-
-
-
-const dataopen = () => {
-    console.log("Iniciando servicio de WebSockets dataopen...")
-    //sockets
-    const socketServer = new SocketManager()//coneccion
-    const { socket: so } = socketServer
-    // Iniciar el servidor en el puerto 8080
-    socketServer.httpServer.listen(8030, () => {
-        console.log('Servidor WebSocket escuchando en http://localhost:8080')
-    })
-    so.on('connection', async (socket) => {
-        console.log('Nuevo cliente conectado:', socket.id)
-        await SocketUsersEvents.verifyUsernames(socket)
-        // SocketUsersEvents.listUsers(socket)
-    })
-
-
-}
 
 
 
@@ -127,9 +113,11 @@ type ParamEmit = {
         creadoEn?: Date
     }
 }
+
+
 class SocketProyectsEvents {
     readonly socket
-    constructor(socket: SocketTypeParam) {
+    constructor(socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
         this.socket = socket
     }
     emit(options: ParamEmit) {
@@ -148,6 +136,6 @@ class SocketProyectsEvents {
 
 
 
-export { SocketManager, SocketProyectsEvents, /*SocketUsersEvents,*/ dataopen }
+export { SocketManager, SocketProyectsEvents, SocketUsersEvents }
 
 
