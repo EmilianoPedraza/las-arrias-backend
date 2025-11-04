@@ -63,7 +63,6 @@ loginAccescSuccessful.post('/access-successful', verifyAccesToken, async (req, r
         const user = await User.buscarPorProps('_id', (dateToken as AccesToken)._id)
         if (typeof user !== 'boolean') {
             const accessSuccessful = setPermissions(user as UserType)
-            console.log(accessSuccessful)
             const token = createToken(accessSuccessful, SECRET_LOG_ACCES_USER_TOKEN as string)
             res.status(200).cookie('access_successful', token, COOKIES_LOG_OPTIONS).json({ ok: true })
         }

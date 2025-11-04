@@ -20,7 +20,6 @@ const verifyAccessSuccessfulTokenSocket = (socket: Socket<DefaultEventsMap, Defa
         const req = socket.request as ReqSocket;
         const token = req.signedCookies?.accessSuccessful;
         if (!token) {
-            console.log('no esta autentificado')
             return next(new Error("Token ausente"))
         }
         const decoded = jsw.verify(token, SECRET_LOG_ACCES_USER_TOKEN as string);
