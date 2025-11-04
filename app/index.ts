@@ -117,9 +117,9 @@ const { publicSocket, privateSocket } = socketServer
 publicSocket.on('connection', async (socket) => {
     console.log('Nuevo cliente conectado:', socket.id)
     await SocketUsersEvents.verifyUsernames(socket)
-    // SocketUsersEvents.listUsers(socket)
 })
-privateSocket.on('connection', (socket) => {
+privateSocket.on('connection', async (socket) => {
     console.log('coneccion privada establecida:', socket.id)
+    await SocketUsersEvents.listUsers(socket)
 })
 //?

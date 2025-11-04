@@ -180,7 +180,9 @@ export class UserRedis {
 
 
     static async getValueKeyString(key: string, server: RedisCacheManager) {
-        const res = await server.client.get(key)
+        await server.connectRedis()
+        const res = await server.client.sMembers(key)
+        console.log('--->', res)
         return res ? res : false
     }
 

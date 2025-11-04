@@ -65,11 +65,5 @@ export const environmentVars = () => {
 }
 
 
-export const corsSocketIoOptions = {
-    cors: {
-        origin: isDev ? "*" : "*"/*process.env.ORIGINS*/,
-    }
-}
-
 
 
