@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { createClient } from "redis";
 import { normalizarString } from "../functions/functions"
+import { isDev } from "../config/config";
 
 
 //----------------para UserRedis
@@ -10,7 +11,7 @@ class RedisCacheManager {
     readonly client
     constructor() {
         this.client = createClient({
-            url: 'redis://las_arrias_redis_service_dev:6379'
+            url: isDev ? 'redis://las_arrias_redis_service_dev:6379' : 'redis://redis:6379'
         })
     }
 

@@ -96,17 +96,16 @@ app.use('/admin', localCitizensRoutes)
 //Ruta para eliminar usuario
 app.use('/', deleteUserRoute)
 
-
-//!
 //ruta para modificacion de datos de usuario
 app.use('/', userUpdate)
 
+//!Para realizar pruebas
 app.use('/test', test)
 //!
 
 
 
-//?---------------------Sockets
+//?---------------------Sockets Users Events---------------------//
 //sockets
 console.log("Iniciando servicio de WebSockets dataopen...")
 //sockets
