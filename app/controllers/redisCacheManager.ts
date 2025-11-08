@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import { createClient } from "redis";
 import { normalizarString } from "../functions/functions"
-import { isDev } from "../config/config";
-
+import { loadEnvironmentVars, environmentVars } from "../config/config";
+loadEnvironmentVars()
+const { REDIS_HOST } = environmentVars()
 
 //----------------para UserRedis
 import XXH from 'xxhashjs' // Librería para generar hash
@@ -11,7 +12,7 @@ class RedisCacheManager {
     readonly client
     constructor() {
         this.client = createClient({
-            url: isDev ? 'redis://las_arrias_redis_service_dev:6379' : 'redis://redis:6379'
+            url: REDIS_HOST
         })
     }
 

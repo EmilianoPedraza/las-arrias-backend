@@ -39,9 +39,10 @@ export const loadEnvironmentVars = () => {
  * - CREDENTIALS: Opcion para cors.
  * - SECRET_LOG_ACCES_TOKEN:
  * - SECRET_LOG_ACCES_USER_TOKEN:
+ * -REDIS_HOST: Host de redis
  */
 export const environmentVars = () => {
-    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO, PORT, ORIGINS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER } = process.env
+    const { MONGO_CLOUSER_LA, SECRET_VALID_USER, MONGO, PORT, ORIGINS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER, REDIS_HOST } = process.env
 
     const ALLOWEDHEADERS = [
         'Content-Type',
@@ -55,13 +56,11 @@ export const environmentVars = () => {
     const FIRST_AND_LASTNAME = "^(?!.*\\s{2})[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}(?:\\s[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}){0,2}$"
     //? const FIRST_AND_LASTNAME = !isDev ? "^(?!.*\\s{2})[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}(?:\\s[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ]{3,}){0,2}$" : ''
 
-
-    // const VALID_EMAIL = "^[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*@[a-zA-Z]+\\.[a-zA-Z]+$"
     const VALID_EMAIL = "^(?=.{1,254}$)(?=[^@]{1,64}@)[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}$"
     const VALID_USERNAME = "^(?!.*\\.\\.)(?!.*_\\.)(?!.*\\._)[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9](?:[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9_.]*(?:\\.[A-Za-zÁÀáàÉÈéèÍÌíìÓÒóòÚÙúùÑñ0-9])?)*$"
     const VALID_PASSWORD = "^(?!.*\\.\\.)[A-Za-zÁÀÉÈÍÌÓÒÚÙáàéèíìúùÑñ0-9_]+(?:\\.[A-Za-zÁÀÉÈÍÌÓÒÚÙáàéèíìúùÑñ0-9_]+)*[^.]$"
 
-    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO, PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER }
+    return { MONGO_CLOUSER_LA, SECRET_VALID_USER, FIRST_AND_LASTNAME, VALID_EMAIL, VALID_USERNAME, VALID_PASSWORD, MONGO, PORT, ORIGINS, METHODS, ALLOWEDHEADERS, CREDENTIALS, SECRET_LOG_ACCES_TOKEN, SECRET_LOG_ACCES_USER_TOKEN, SECRET_LOG_ADMIN_USER, REDIS_HOST }
 }
 
 
