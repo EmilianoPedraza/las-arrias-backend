@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { loadEnvironmentVars, environmentVars } from "../config/config";
+import { loadEnvironmentVars, environmentVars, isDev } from "../config/config";
 
 
 loadEnvironmentVars()
@@ -26,7 +26,10 @@ class MongoDbManager {
             }
 
             if (status === 0 || status === 3) {
-                const conn = await mongoose.connect(MONGO as string);
+                const conn = isDev ? await mongoose.connect(MONGO as string) : await mongoose.connect(MONGO as string, {
+                    tls: true,
+                    tlsAllowInvalidCertificates: false,
+                });
                 console.log(`Mongo conectado: ${conn.connection.host}`);
                 return conn;
             }
