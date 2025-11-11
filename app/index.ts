@@ -114,7 +114,7 @@ const { publicSocket, privateSocket } = socketServer
 //Iniciar el servidor en el puerto 8080
 //Eventos de coneccion publica
 publicSocket.on('connection', async (socket) => {
-    console.log('Nuevo cliente conectado:', socket.id)
+    console.log('Nuevo cliente publico conectado:', socket.id)
     await SocketUsersEvents.verifyUsernames(socket)
 })
 privateSocket.on('connection', async (socket) => {

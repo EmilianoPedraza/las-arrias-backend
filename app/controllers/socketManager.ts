@@ -6,9 +6,8 @@ import { verifyAccessSuccessfulTokenSocket } from "../socket/midlewares"
 import { Server, Namespace, DefaultEventsMap, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
 
-// import { isDev } from "../config/config";
 loadEnvironmentVars()
-const { ORIGINS, CREDENTIALS, ALLOWEDHEADERS, METHODS } = environmentVars()
+const { ORIGINS, ALLOWEDHEADERS } = environmentVars()
 
 
 class SocketManager {
@@ -18,10 +17,10 @@ class SocketManager {
     constructor(server: HTTPServer) {
         this.socket = new Server(server, {
             cors: {
-                origin: ORIGINS,
-                credentials: CREDENTIALS,
+                origin: [ORIGINS || ''],
+                credentials: true,
                 allowedHeaders: ALLOWEDHEADERS,
-                methods: METHODS
+                methods: ['GET', 'POST']
             },
         });
 
@@ -40,7 +39,7 @@ class SocketUsersEvents {
         //es una coneccion habierta para verificar nombres de usuario, se utiliza para validaciones en tiempo real al registrar nuevos usuarios
         socket.on('client:searchUsername', async ({ username }: { username: string }) => {
             //falta validar caracteres que se ingresan
-            console.log('Verificando nombre de usuario:', username)
+            console.log('client:searchUsername - username:', username)
             const searchResult = await UserRedis.searchKeySetUserRedis(conectionRedis, "nombreUsuario", username, 1)
             console.log('searchResult:', searchResult)
             socket.emit('server:searchUsernameRespose', (searchResult ? true : false))
