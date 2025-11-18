@@ -26,7 +26,9 @@ import userUpdate from "./routes/updateUser";
 
 import test from "./testing/mookUsersRoute"; //*solo pruebas
 
-import { SocketManager, SocketUsersEvents } from "./controllers/socketManager";
+
+import { SocketManager } from "./controllers/socketManager/socketManager";
+import { SocketUsersEvents } from "./controllers/socketManager/socketUserEvents";
 //!
 
 
