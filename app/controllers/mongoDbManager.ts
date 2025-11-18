@@ -28,7 +28,7 @@ class MongoDbManager {
             if (status === 0 || status === 3) {
                 const conn = isDev ? await mongoose.connect(MONGO as string) : await mongoose.connect(MONGO as string, {
                     tls: true,
-                    tlsAllowInvalidCertificates: false,
+                    tlsAllowInvalidCertificates: isDev ? false : true,
                 });
                 console.log(`Mongo conectado: ${conn.connection.host}`);
                 return conn;
