@@ -1,41 +1,11 @@
 import mongoose from "mongoose";
-import { createClient } from "redis";
-import { normalizarString } from "../functions/functions"
-import { loadEnvironmentVars, environmentVars } from "../config/config";
-loadEnvironmentVars()
-const { REDIS_HOST } = environmentVars()
+import { RedisCacheManager } from "./redisCacheManager";
+import { normalizarString } from "../../functions/functions"
+
 
 //----------------para UserRedis
 import XXH from 'xxhashjs' // Librería para generar hash
-
-class RedisCacheManager {
-    readonly client
-    constructor() {
-        this.client = createClient({
-            url: REDIS_HOST
-        })
-    }
-
-    async connectIfRequired(): Promise<void> {
-        if (!this.client.isOpen || !this.client.isReady) {
-            await this.client.connect()
-            console.log('Conectado a Redis exitosamente')
-            return
-        }
-        console.log('Ya estaba conectado a Redis')
-    }
-    //realiza la conexión a redis si es no se realizo
-    async connectRedis(): Promise<true | false> {
-        try {
-            await this.connectIfRequired()
-            return true
-        } catch (error) {
-            console.log('Error al intentar al ejecutar connectRedis\n', error)
-            return false
-        }
-    }
-}
-export const conectionRedis = new RedisCacheManager()// instancia que se va a usar en el proyecto
+const seed = 0xABCD // Semilla para el hash
 
 
 
@@ -62,7 +32,6 @@ type UserRedisUpdateType = {
 
 
 
-const seed = 0xABCD // Semilla para el hash
 export class UserRedis {
     static hashFormation(stringForHash: string): string { return XXH.h32(stringForHash, seed).toString(16) }
 
@@ -321,25 +290,6 @@ export class UserRedis {
         }
     }
 }
-
-
-
-
-/*
-Para buscar podria
-1-buscar de forma directa en usernames sin normalización.
-
-
-
-
-
-
-
-
- */
-
-
-
 
 
 

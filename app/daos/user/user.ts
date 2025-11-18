@@ -8,10 +8,10 @@ import { ClientUserType, UserType } from "../../types/users/userTyp";
 
 import { Model, Types } from "mongoose"
 
-import { UserRedis, conectionRedis } from "../../controllers/redisCacheManager";
 import { validateEmail } from "../../functions/functions";
 
-
+import { UserRedis } from "../../controllers/cacheManager/userRedis";
+import { conectionRedis } from "../../controllers/cacheManager/redisCacheManager";
 
 
 // Carga las variables de entorno 

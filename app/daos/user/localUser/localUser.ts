@@ -9,7 +9,8 @@ import { UserError } from "../errors/userError";
 import { validType, validarNumEntero } from "../../../functions/functions";
 //Para validar si existen coincidencias con ciudadanos registrados
 import { LocalCitizensClass } from "../../ciudadanosLocales/ciudadanosLocales";
-import { UserRedis, conectionRedis } from "../../../controllers/redisCacheManager";
+import { UserRedis } from "../../../controllers/cacheManager/userRedis";
+import { conectionRedis } from "../../../controllers/cacheManager/redisCacheManager";
 import User from "../user";//clase de la cual se extiende
 import { Types } from "mongoose";
 

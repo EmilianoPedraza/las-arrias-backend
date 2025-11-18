@@ -2,7 +2,9 @@ import { VisitingUser } from "../../../models/usuario";
 import { UserError } from "../errors/userError";
 import User from "../user";
 import { VisitingUserType, ClientVisitingUserType } from '../../../types/users/visitingUsersTyp'
-import { conectionRedis, UserRedis } from "../../../controllers/redisCacheManager";
+
+import { conectionRedis } from "../../../controllers/cacheManager/redisCacheManager";
+import { UserRedis } from "../../../controllers/cacheManager/userRedis";
 import { Types } from 'mongoose'
 
 

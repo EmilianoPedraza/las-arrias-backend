@@ -1,7 +1,8 @@
 
 // import cookieParser from "cookie-parser";
 import { environmentVars, loadEnvironmentVars } from "../config/config";
-import { UserRedis, conectionRedis } from "./redisCacheManager"
+import { UserRedis } from "./cacheManager/userRedis";
+import { conectionRedis } from "./cacheManager/redisCacheManager";
 import { verifyAccessSuccessfulTokenSocket } from "../socket/midlewares"
 import { Server, Namespace, DefaultEventsMap, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
@@ -93,9 +94,6 @@ class SocketUsersEvents {
         })
     }
 }
-
-
-
 
 
 

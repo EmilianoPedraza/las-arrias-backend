@@ -4,12 +4,12 @@ import { Faker, es } from '@faker-js/faker';// Librería para generar datos fals
 import bcrypt from "bcrypt"; // Librería para encriptar contraseñas
 
 import { LocalUser } from "../models/usuario";//Modelo de datos de usuario local
-import { conectionRedis } from "../controllers/redisCacheManager";//Clase para manejar Redis
+import { conectionRedis } from "../controllers/cacheManager/redisCacheManager";//instancia de clase para manejar Redis
+import { UserRedis } from "../controllers/cacheManager/userRedis";
 import localUser from "../daos/user/localUser/localUser";
 import { LocalUsersArray } from "../types/mookUsersRouteTyp";
 import { UserError } from "../daos/user/errors/userError";
 import { Types } from "mongoose";
-import { UserRedis } from "../controllers/redisCacheManager";
 
 //* Se define el router principal de pruebas
 const testingRoute = Router();
